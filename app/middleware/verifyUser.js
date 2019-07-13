@@ -11,7 +11,6 @@ module.exports = function verifyUser(user, result){
             console.log("error: ", err);
             result(err, null);
         }else if (res.rows[0] != undefined){
-            console.log(res.rows[0].hash)
             bcrypt.compare(user.password, res.rows[0].hash, function(err, verified) {
                 if (verified == true){
                     result(null, res.rows[0].user_id);
@@ -21,7 +20,7 @@ module.exports = function verifyUser(user, result){
                 }
             });
         } else {
-            result('User not found with username: ' + user.username, 0);
+            result('User not found with username: ' + user.username, null);
         }
     });           
 
