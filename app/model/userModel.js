@@ -20,7 +20,7 @@ User.login = function login(user_info, res) {
           console.log("error: ", err);
         }
         else{
-          res(token, null);
+          res({'bearer': token}, null);
         }
       })
     } else {
