@@ -24,7 +24,7 @@ exports.register = function(req, res) {
     if(err) {
       res.send(err);
     }else{
-      user_token = user_info.login(user_info, user_token) {
+      User.login(user_info, function(err, user_token) {
 
         if(err) {
           res.send(err);
@@ -32,7 +32,7 @@ exports.register = function(req, res) {
           console.log(user_info.username, ' logged in.');
           res.json(user_token);
         }
-      }
+      });
     }
   });
 };

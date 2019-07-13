@@ -41,7 +41,7 @@ User.register = function register(user_info, result) {
                   console.log("error: ", err);
                   result(err, null);
               }else{
-                  console.log('User: ', res.rows[0].user_id, 'created.');
+                  console.log('User:', res.rows[0].user_id, 'created.');
                   result(null, res.rows[0].user_id);
               }
           });
