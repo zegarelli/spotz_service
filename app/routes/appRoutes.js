@@ -15,9 +15,12 @@ module.exports = function(app) {
 
   // Main app router
 
-  // Login routes
+  // User routes
   app.route('/login')
     .post(user.login);
+
+  app.route('/register')
+    .post(user.register)
 
   // comment Routes
   app.route('/comments')
