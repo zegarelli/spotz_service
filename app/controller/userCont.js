@@ -22,14 +22,21 @@ exports.register = function(req, res) {
   User.register(user_info, function(err, user_id) {
 
     if(err) {
-      res.send(err);
+      if(err.detail.startsWith("Key (username)=")){  // Username already exists
+        res.send('Username already exists, please pick another')
+      }else if (err.detail.startsWith("Key (email)=")){
+        res.send('An account with that email already exists')
+        //Maybe redirect to forgot password portal? 
+      }else{
+        res.send(err); //Something else happened, send them full err
+      }
     }else{
       User.login(user_info, function(err, user_token) {
 
         if(err) {
           res.send(err);
         }else{
-          console.log(user_info.username, ' logged in.');
+          console.log(user_info.username, ' logged in.');        
           res.json(user_token);
         }
       });
