@@ -1,11 +1,12 @@
 'use strict';
 
-var Comment = require('../model/appModel.js');
+const jwt = require('jsonwebtoken');
+
+var Comment = require('../model/commentModel');
 
 exports.list_all_comments = function(req, res) {
   Comment.getAllComments(function(err, comment) {
 
-    console.log('controller')
     if (err)
       res.send(err);
       console.log('res', comment);
@@ -26,11 +27,11 @@ exports.create_a_comment = function(req, res) {
         }
 else{
   
-  Comment.createComment(new_comment, function(err, comment) {
+  Comment.createComment(new_comment, function(err, comment_id) {
     
     if (err)
       res.send(err);
-    res.json(comment);
+    res.json(comment_id);
   });
 }
 };
@@ -55,11 +56,19 @@ exports.update_a_comment = function(req, res) {
 
 
 exports.delete_a_comment = function(req, res) {
-
-
-  Comment.remove(req.params.commentId, function(err, comment) {
-    if (err)
+  jwt.verify(req.token, process.env.SECRET, (err, authData) => {
+    if (err){
+      res.sendStatus(403);
       res.send(err);
-    res.json({ message: 'Comment successfully deleted' });
+    } else {
+      Comment.remove(req.params.commentId, function(err, comment) {
+        if (err){
+          res.sendStatus(403);
+          res.send(err);
+        } else {
+          res.json({ message: 'Comment successfully deleted' });
+        }
+      })  
+    }
   });
 };
