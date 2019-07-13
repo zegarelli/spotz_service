@@ -15,15 +15,26 @@ var User = function(user){
 }
 
 User.login = function login(user_info, res) { 
-  verifyUser(user_info, function(ver_err, result) {
-    if(result === 1) {
+  verifyUser(user_info, function(ver_err, user_id) {
+    if(user_id != null) {
       jwt.sign(user_info.token_payload, process.env.SECRET, {expiresIn:  '24h'}, function(err, token) {
         if(err) {
           console.log("error: ", err);
           res(err, null);
         }
         else{
-          res(null, {'bearer': token});
+          //User logged in!
+          User.update_last_login(user_id, function(err, user_data) {
+            if (err){
+              console.log('Error updating last login', err)
+            }else{
+              res(null, {
+                'user_id': user_id,
+                'bearer': token,
+                'account_created': user_data.created_on
+              });
+            }
+          })
         }
       })
     } else {
@@ -34,6 +45,21 @@ User.login = function login(user_info, res) {
 
   })
 }
+
+User.update_last_login = function update_last_login(user_id, result) {
+  const text = 'UPDATE accounts set last_login = CURRENT_TIMESTAMP WHERE user_id = $1 RETURNING *'
+  var values = [user_id]
+  client.query(text, values, function (err, res) {
+          
+              if(err) {
+                  console.log("error: ", err);
+                  result(err, null);
+              }else{
+                  result(null, res.rows[0]);
+              }
+          });
+  };
+
 
 User.register = function register(user_info, result) {
   const text = 'INSERT INTO accounts(username, hash, email, created_on, last_login) VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING user_id'

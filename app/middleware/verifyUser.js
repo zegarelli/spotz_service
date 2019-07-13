@@ -14,10 +14,10 @@ module.exports = function verifyUser(user, result){
             console.log(res.rows[0].hash)
             bcrypt.compare(user.password, res.rows[0].hash, function(err, verified) {
                 if (verified == true){
-                    result(null, 1);
+                    result(null, res.rows[0].user_id);
                     user.password = null; //Clear string pass
                 }else{
-                    result('Password not correct.', 0);
+                    result('Password not correct.', null);
                 }
             });
         } else {
