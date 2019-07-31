@@ -5,11 +5,7 @@ const User = require('../models/User')
 
 /* GET users listing. */
 router.get('/', async (req, res) => {
-  let query = await User.query()
-  let users = req.query.user
-  users = { users }
-  console.log(users)
-  query = query.where(users)
+  const query = await User.query()
   res.json(query)
 })
 

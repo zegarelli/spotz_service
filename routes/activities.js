@@ -14,12 +14,7 @@ router.get('/', async (req, res) => {
     const results = await activityService.search({ name, creator, place })
     res.json(results)
   } catch (err) {
-    err.httpMeta = {
-      query: { status, after, before },
-      operation: 'getBatches',
-      description: 'failed to search batches'
-    }
-    next(err)
+    res.json(err)
   }
 })
 
@@ -32,6 +27,5 @@ router.get('/:id/users', async (req, res) => {
   const activities = await Activity.query().findById(req.params.id).eager('users')
   res.json(activities)
 })
-
 
 module.exports = router
