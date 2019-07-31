@@ -1,29 +1,22 @@
 {
-  "name": "spots_service",
-  "version": "1.0.0",
-  "description": "Backend for the spots project",
-  "main": "server.js",
-  "dependencies": {
-    "bcrypt": "^3.0.6",
-    "body-parser": "1.19.0",
-    "express": "4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "mysql": "2.17.1",
-    "pg": "^7.11.0"
-  },
-  "devDependencies": {
-    "nodemon": "^1.19.1"
-  },
+  "name": "objection-knex",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "start": "node server",
-    "dev": "nodemon server"
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://xbraatz@bitbucket.org/mzegarelli/spots_service.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "homepage": "https://bitbucket.org/mzegarelli/spots_service#readme"
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jade": "~1.11.0",
+    "knex": "^0.19.1",
+    "morgan": "~1.9.1",
+    "nodemon": "^1.19.1",
+    "objection": "^1.6.9",
+    "pg": "^7.12.0"
+  }
 }
