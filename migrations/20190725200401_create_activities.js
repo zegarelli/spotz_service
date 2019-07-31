@@ -5,6 +5,7 @@ exports.up = async function (knex) {
     table.string('name')
     table.integer('creator_id').references('users.id')
     table.integer('place_id').references('places.id')
+    table.json('extended_data')
   })
 }
 

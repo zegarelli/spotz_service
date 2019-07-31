@@ -5,6 +5,7 @@ exports.up = async function (knex) {
     table.string('firstName')
     table.string('lastName')
     table.string('email')
+    table.json('extended_data')
   })
 }
 

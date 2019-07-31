@@ -4,6 +4,7 @@ exports.up = async function (knex) {
     table.increments('id').primary()
     table.string('name')
     table.integer('creator_id').references('users.id')
+    table.json('extended_data')
   })
 }
 
