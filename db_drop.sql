@@ -1,8 +1,6 @@
 -- to run 
--- sudo su postgres
--- psql
--- pqsl -d postgres -f db_drop.sql
--- you might need to run it twice
+---pqsl -d postgres -f db_drop.sql
+-- you might need to run it twice (?)
 
 SELECT pg_terminate_backend(pg_stat_activity.pid)
 FROM pg_stat_activity

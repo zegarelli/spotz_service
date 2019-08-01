@@ -1,5 +1,4 @@
 -- to run 
--- sudo su postgres
 -- pqsl -d postgres -f db_setup.sql
 
 CREATE DATABASE spots_db;
