@@ -1,4 +1,4 @@
-/* global describe, it, expect */
+/* global before, describe, it, expect */
 
 const { get, search } = require('../../services/activitiesService')
 
