@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index')
 var usersRouter = require('./routes/users')
 var placesRouter = require('./routes/places')
 var activitiesRouter = require('./routes/activities')
+var testRouter = require('./routes/test')
 
 var app = express()
 
@@ -25,6 +26,11 @@ app.use('/', indexRouter)
 app.use('/users', usersRouter)
 app.use('/places', placesRouter)
 app.use('/activities', activitiesRouter)
+
+/*
+Test end-point for our react demo
+*/
+app.use('/test', testRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
