@@ -16,7 +16,7 @@ $ npm install
 ```
 5. Building tables and seeding data:
 ```
-$ npm run db-setup
+$ npm run setup-db
 ```
 
 ## Running Server
