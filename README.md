@@ -10,7 +10,7 @@ _The express backend bit_
 $ psql -d postgres -f db_setup.sql
 ```
 
-4. Setup node packages:
+4. Change back to original user and setup node packages:
 ```
 $ npm install
 ```
