@@ -5,12 +5,12 @@ exports.seed = function (knex) {
     .then(function () {
       // Inserts seed entries
       return knex('activities').insert([
-        { name: 'drinking', creator_id: 2, place_id: 2 },
-        { name: 'eating', creator_id: 1, place_id: 2 },
-        { name: 'dancing', creator_id: 3, place_id: 2 },
-        { name: 'drinking', creator_id: 3, place_id: 1 },
-        { name: 'drinking', creator_id: 3, place_id: 3 },
-        { name: 'dancing', creator_id: 3, place_id: 1 }
+        { name: 'drinking', created_by: 2, place_id: 2 },
+        { name: 'eating', created_by: 1, place_id: 2 },
+        { name: 'dancing', created_by: 3, place_id: 2 },
+        { name: 'drinking', created_by: 3, place_id: 1 },
+        { name: 'drinking', created_by: 3, place_id: 3 },
+        { name: 'dancing', created_by: 3, place_id: 1 }
       ])
     })
 }
