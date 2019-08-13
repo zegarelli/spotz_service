@@ -18,6 +18,11 @@ router.get('/', async (req, res) => {
   }
 })
 
+router.get('/all', async (req, res) => {
+  const activities = await Activity.query()
+  res.json(activities)
+})
+
 router.get('/:id', async (req, res) => {
   const activities = await Activity.query().findById(req.params.id)
   res.json(activities)
