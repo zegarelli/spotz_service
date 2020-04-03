@@ -4,14 +4,14 @@
 
 SELECT pg_terminate_backend(pg_stat_activity.pid)
 FROM pg_stat_activity
-WHERE pg_stat_activity.datname = 'spots_db'
+WHERE pg_stat_activity.datname = 'spotz'
   AND pid <> pg_backend_pid();
 
-DROP DATABASE spots_db;
+DROP DATABASE spotz;
 
 SELECT pg_terminate_backend(pg_stat_activity.pid)
 FROM pg_stat_activity
-WHERE pg_stat_activity.datname = 'spots_test_db'
+WHERE pg_stat_activity.datname = 'spotz_test'
   AND pid <> pg_backend_pid();
 
-DROP DATABASE spots_test_db;
+DROP DATABASE spotz_test;
