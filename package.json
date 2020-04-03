@@ -12,7 +12,7 @@
     "setup-db": "npm run migrate && npm run seed",
     "setup-test-db": "npm run migrate-test && npm run seed-test",
     "test": "export DB_NAME=spotz_test && jest --detectOpenHandles --collectCoverage",
-    "test-watch": "export DB_NAME=spotz_test && jest --watch"
+    "test-watch": "export DB_NAME=spotz_test && jest --watch --collectCoverage"
   },
   "devDependencies": {
     "jest": "^24.8.0",
@@ -31,5 +31,8 @@
     "morgan": "~1.9.1",
     "objection": "^1.6.9",
     "pg": "^7.12.0"
-  }
+  },
+  "jest": {
+    "testEnvironment": "node"
+ }
 }
