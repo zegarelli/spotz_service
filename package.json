@@ -5,14 +5,14 @@
   "scripts": {
     "dev": "nodemon ./bin/www",
     "migrate": "knex migrate:latest",
-    "migrate-test": "export DB_NAME=spots_test && knex migrate:latest",
+    "migrate-test": "export DB_NAME=spotz_test && knex migrate:latest",
     "start": "node ./bin/www",
     "seed": "knex seed:run",
-    "seed-test": "export DB_NAME=spots_test && knex seed:run",
+    "seed-test": "export DB_NAME=spotz_test && knex seed:run",
     "setup-db": "npm run migrate && npm run seed",
     "setup-test-db": "npm run migrate-test && npm run seed-test",
-    "test": "export DB_NAME=spots_test && jest",
-    "test-watch": "export DB_NAME=spots_test && jest --watch"
+    "test": "export DB_NAME=spotz_test && jest --detectOpenHandles",
+    "test-watch": "export DB_NAME=spotz_test && jest --watch"
   },
   "devDependencies": {
     "jest": "^24.8.0",
