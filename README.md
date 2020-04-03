@@ -42,7 +42,7 @@ su <username>
 ```
 8. CD into this repo, and run db setup script to setup the testing and development DBs:
 ```
-$ psql -d postgres -f db_setup.sql
+$ psql -d postgres -f db_create.sql
 ```
 
 9. Install node packages:

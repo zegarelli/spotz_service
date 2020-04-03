@@ -15,3 +15,5 @@ WHERE pg_stat_activity.datname = 'spotz_test'
   AND pid <> pg_backend_pid();
 
 DROP DATABASE spotz_test;
+
+DROP USER spotz_user;
