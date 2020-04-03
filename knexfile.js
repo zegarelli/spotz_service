@@ -12,6 +12,6 @@ module.exports = {
     max: 10
   },
   migrations: {
-    tableName: process.env.DB_NAME
+    tableName: 'knex_migrations'
   }
 }
