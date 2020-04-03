@@ -3,7 +3,7 @@
 // TODO Seed database with data we know is there
 // const dbConfig = require('../../knexfile')
 // const knex = require('knex')(dbConfig)
-const { get, search } = require('../../services/activitiesService')
+const { get, search } = require('../../../services/activitiesService')
 
 describe('get', () => {
   it('is a function', () => {

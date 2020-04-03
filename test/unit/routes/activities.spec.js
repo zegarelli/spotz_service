@@ -1,4 +1,4 @@
-const activities = require('../../routes/activities')
+const activities = require('../../../routes/activities')
 
 describe('get', () => {
   it('is a function', () => {
