@@ -1,38 +1,38 @@
 const Knex = require('knex')
-const connection = require('../knexfile')
+const connection = require('../../knexfile')
 const { Model } = require('objection')
-const Place = require('./Place')
+const User = require('./User')
 const Activity = require('./Activity')
 
 const knexConnection = Knex(connection)
 
 Model.knex(knexConnection)
 
-class User extends Model {
+class Place extends Model {
   static get tableName () {
-    return 'users'
+    return 'places'
   }
 
   static get relationMappings () {
     return {
-      places: {
-        relation: Model.HasManyRelation,
-        modelClass: Place,
+      creator_id: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: User,
         join: {
-          from: 'users.id',
-          to: 'places.creator_id'
+          from: 'places.creator_id',
+          to: 'user.id'
         }
       },
       activities: {
         relation: Model.HasManyRelation,
         modelClass: Activity,
         join: {
-          from: 'users.id',
-          to: 'activities.creator_id'
+          from: 'place.id',
+          to: 'activities.place_id'
         }
       }
     }
   }
 }
 
-module.exports = User
+module.exports = Place

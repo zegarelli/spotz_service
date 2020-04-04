@@ -1,11 +1,7 @@
 const Activity = require('../models/Activity')
 
-function get (activityId) {
-  return Activity.getById(activityId)
-}
-
-function search ({ name, creator, place }) {
-  let query = Activity.query()
+async function search (name, creator, place) {
+  let query = await Activity.query()
   query = name ? query.where({ name }) : query
   query = creator ? query.where({ creator }) : query
   query = place ? query.where({ place }) : query
@@ -15,6 +11,5 @@ function search ({ name, creator, place }) {
 }
 
 module.exports = {
-  get,
   search
 }

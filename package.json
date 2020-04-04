@@ -12,11 +12,7 @@
     "setup-db": "npm run migrate && npm run seed",
     "setup-test-db": "npm run migrate-test && npm run seed-test",
     "test": "export DB_NAME=spotz_test && jest --detectOpenHandles --collectCoverage",
-    "test-watch": "export DB_NAME=spotz_test && jest --watch"
-  },
-  "devDependencies": {
-    "jest": "^24.8.0",
-    "nodemon": "^1.19.1"
+    "test-watch": "export DB_NAME=spotz_test && jest --watch --collectCoverage"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -31,5 +27,18 @@
     "morgan": "~1.9.1",
     "objection": "^1.6.9",
     "pg": "^7.12.0"
+  },
+  "devDependencies": {
+    "chai": "~4.2.0",
+    "chai-as-promised": "~7.1.1",
+    "chai-http": "^4.3.0",
+    "danger": "^9.3.0",
+    "dirty-chai": "~2.0.1",
+    "mocha": "^6.2.2",
+    "nodemon": "^2.0.2",
+    "nyc": "^15.0.1",
+    "sinon": "^7.5.0",
+    "sinon-chai": "~3.3.0",
+    "standard": "^14.3.3"
   }
 }
