@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const Activity = require('../models/Activity')
-const activityService = require('../services/activitiesService')
+const activityService = require('../services/activityService')
 
 /* GET activities listing. */
 router.get('/', async (req, res) => {
@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
   const place = req.query.place || null
 
   try {
-    const results = await activityService.search({ name, creator, place })
+    const results = await activityService.search(name, creator, place)
     res.json(results)
   } catch (err) {
     res.json(err)
