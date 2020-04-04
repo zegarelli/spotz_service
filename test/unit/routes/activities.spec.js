@@ -57,7 +57,7 @@ describe('activities router', function () {
       })
     })
   })
-  describe('/activities/all', function () {
+  describe('/activities/:id', function () {
     let findByIdStub
     beforeEach(function () {
       req.url = '/activities'
