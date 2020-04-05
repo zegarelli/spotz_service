@@ -27,7 +27,7 @@ class Activity extends Model {
         relation: Model.BelongsToOneRelation,
         modelClass: User,
         join: {
-          from: 'activities.creator_id',
+          from: 'activities.created_by',
           to: 'user.id'
         }
       }
