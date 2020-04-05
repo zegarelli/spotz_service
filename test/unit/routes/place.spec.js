@@ -1,12 +1,11 @@
 /* global describe, beforeEach, it, expect */
 const { stubRes, createDeferredNext } = require('../../support/testUtil')
-const activities = require('../../../app/routes/activities')
-const activityService = require('../../../app/services/activityService')
-const Activity = require('../../../app/models/Activity')
+const places = require('../../../app/routes/places')
+const Place = require('../../../app/models/Place')
 
 require('../../support/node')
 
-describe('activities router', function () {
+describe('places router', function () {
   let req, res, expectedOutput, nextSpy
   beforeEach(function () {
     expectedOutput = { outputs: 'stuff' }
@@ -20,54 +19,39 @@ describe('activities router', function () {
     res = stubRes()
     nextSpy = this.sinon.spy(createDeferredNext())
   })
-  describe('/activities', function () {
-    let activityServiceStub
+  describe('/places', function () {
+    let placeQueryStub
     beforeEach(function () {
       expectedOutput = { id: '123abc' }
-      activityServiceStub = this.sinon.stub(activityService, 'search')
-      activityServiceStub.resolves(expectedOutput)
+      placeQueryStub = this.sinon.stub(Place, 'query')
+      placeQueryStub.resolves(expectedOutput)
     })
     it('searches and responds', async function () {
-      activities(req, res, nextSpy)
+      places(req, res, nextSpy)
       return res.then(async function () {
         expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
-      })
-    })
-    it('passes along the search criteria', async function () {
-      req.query = {
-        name: 'run',
-        creator: 'martin',
-        place: 'trolley trail'
-      }
-      activities(req, res, nextSpy)
-      return res.then(async function () {
-        expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
-        const searchArgs = activityServiceStub.getCall(0).args
-        expect(searchArgs[0]).to.equal(req.query.name)
-        expect(searchArgs[1]).to.equal(req.query.creator)
-        expect(searchArgs[2]).to.equal(req.query.place)
       })
     })
     it('passes on errors', async function () {
       const error = new Error('blah')
-      activityServiceStub.throws(error)
-      activities(req, res, nextSpy)
+      placeQueryStub.throws(error)
+      places(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)
       })
     })
   })
-  describe('/activities/:id', function () {
+  describe('/places/:id', function () {
     let findByIdStub
     beforeEach(function () {
       req.url = '/123abc'
       expectedOutput = { id: '123abc' }
       findByIdStub = this.sinon.stub()
-      this.sinon.stub(Activity, 'query').returns({ findById: findByIdStub })
+      this.sinon.stub(Place, 'query').returns({ findById: findByIdStub })
     })
     it('searches and responds', async function () {
       findByIdStub.resolves(expectedOutput)
-      activities(req, res, nextSpy)
+      places(req, res, nextSpy)
       return res.then(async function () {
         expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
       })
@@ -75,7 +59,7 @@ describe('activities router', function () {
     it('passes on errors', async function () {
       const error = new Error('blah')
       findByIdStub.throws(error)
-      activities(req, res, nextSpy)
+      places(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)
       })
