@@ -19,7 +19,7 @@ class Place extends Model {
         relation: Model.BelongsToOneRelation,
         modelClass: User,
         join: {
-          from: 'places.creator_id',
+          from: 'places.created_by',
           to: 'user.id'
         }
       },

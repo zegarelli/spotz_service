@@ -20,7 +20,7 @@ class User extends Model {
         modelClass: Place,
         join: {
           from: 'users.id',
-          to: 'places.creator_id'
+          to: 'places.created_by'
         }
       },
       activities: {
@@ -28,7 +28,7 @@ class User extends Model {
         modelClass: Activity,
         join: {
           from: 'users.id',
-          to: 'activities.creator_id'
+          to: 'activities.created_by'
         }
       }
     }
