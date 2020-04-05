@@ -4,49 +4,36 @@ const router = express.Router()
 const User = require('../models/User')
 
 /* GET users listing. */
-router.get('/', async (req, res) => {
-  const query = await User.query()
-  res.json(query)
+router.get('/', async (req, res, next) => {
+  try {
+    res.json(await User.query())
+  } catch (err) {
+    next(err)
+  }
 })
 
-router.get('/:id', async (req, res) => {
-  // gets one idea, found by id.
-  // Also fetches the related comments using the .eager method
-  const user = await User.query().findById(req.params.id)
-  res.json(user)
+router.get('/:id', async (req, res, next) => {
+  try {
+    res.json(await User.query().findById(req.params.id).eager('[places, activities]'))
+  } catch (err) {
+    next(err)
+  }
 })
 
-router.get('/:id/places', async (req, res) => {
-  // gets one idea, found by id.
-  // Also fetches the related comments using the .eager method
-  const user = await User.query().findById(req.params.id).eager('places')
-  res.json(user)
+router.get('/:id/places', async (req, res, next) => {
+  try {
+    res.json(await User.query().findById(req.params.id).eager('places'))
+  } catch (err) {
+    next(err)
+  }
 })
 
-router.get('/:id/activities', async (req, res) => {
-  // gets one idea, found by id.
-  // Also fetches the related comments using the .eager method
-  const user = await User.query().findById(req.params.id).eager('activities')
-  res.json(user)
-})
-
-router.post('/', async (req, res) => {
-  // creates a new idea from the request body
-  // only allows the idea and creator fields for safety
-  const newUser = req.body
-
-  const user = await User.query()
-    .allowInsert('[idea, creator]')
-    .insert(newUser)
-
-  res.send(user)
-})
-
-router.delete('/:id', async (req, res) => {
-  // deletes an idea
-  await User.query().deleteById(req.params.id)
-
-  res.redirect('/ideas')
+router.get('/:id/activities', async (req, res, next) => {
+  try {
+    res.json(await User.query().findById(req.params.id).eager('activities'))
+  } catch (err) {
+    next(err)
+  }
 })
 
 module.exports = router
