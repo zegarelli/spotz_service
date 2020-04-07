@@ -15,20 +15,20 @@ class Activity extends Model {
 
   static get relationMappings () {
     return {
-      place_id: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: Place,
-        join: {
-          from: 'activities.place_id',
-          to: 'place.id'
-        }
-      },
       creator_id: {
         relation: Model.BelongsToOneRelation,
         modelClass: User,
         join: {
           from: 'activities.created_by',
           to: 'user.id'
+        }
+      },
+      place_id: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Place,
+        join: {
+          from: 'activities.place_id',
+          to: 'place.id'
         }
       }
     }
