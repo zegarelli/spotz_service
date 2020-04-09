@@ -42,18 +42,18 @@ describe('users router', function () {
     })
   })
   describe('/users/:id', function () {
-    let findByIdStub, userId, eagerStub
+    let findByIdStub, userId, withGraphFetchedStub
     beforeEach(function () {
       userId = '123abc'
       req.url = `/${userId}`
       expectedOutput = { id: userId }
       findByIdStub = this.sinon.stub()
-      eagerStub = this.sinon.stub()
+      withGraphFetchedStub = this.sinon.stub()
       this.sinon.stub(User, 'query').returns({ findById: findByIdStub })
-      findByIdStub.returns({ eager: eagerStub })
+      findByIdStub.returns({ withGraphFetched: withGraphFetchedStub })
     })
     it('searches and responds', async function () {
-      eagerStub.resolves(expectedOutput)
+      withGraphFetchedStub.resolves(expectedOutput)
       users(req, res, nextSpy)
       return res.then(async function () {
         expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
@@ -73,30 +73,30 @@ describe('users router', function () {
     })
   })
   describe('/users/:id/places', function () {
-    let findByIdStub, eagerStub, userId
+    let findByIdStub, withGraphFetchedStub, userId
     beforeEach(function () {
       userId = '123abc'
       req.url = `/${userId}/places`
       expectedOutput = { id: userId }
       findByIdStub = this.sinon.stub()
-      eagerStub = this.sinon.stub()
+      withGraphFetchedStub = this.sinon.stub()
       this.sinon.stub(User, 'query').returns({ findById: findByIdStub })
-      findByIdStub.returns({ eager: eagerStub })
+      findByIdStub.returns({ withGraphFetched: withGraphFetchedStub })
     })
     it('searches and responds', async function () {
-      eagerStub.resolves(expectedOutput)
+      withGraphFetchedStub.resolves(expectedOutput)
       users(req, res, nextSpy)
       return res.then(async function () {
         expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
         const findByIdArgs = findByIdStub.getCall(0).args
         expect(findByIdArgs[0]).to.equal(userId)
-        const eagerStubArgs = eagerStub.getCall(0).args
+        const eagerStubArgs = withGraphFetchedStub.getCall(0).args
         expect(eagerStubArgs[0]).to.equal('places')
       })
     })
     it('passes on errors', async function () {
       const error = new Error('blah')
-      eagerStub.throws(error)
+      withGraphFetchedStub.throws(error)
       users(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)
@@ -104,30 +104,30 @@ describe('users router', function () {
     })
   })
   describe('/users/:id/activities', function () {
-    let findByIdStub, eagerStub, userId
+    let findByIdStub, withGraphFetchedStub, userId
     beforeEach(function () {
       userId = '123abc'
       req.url = `/${userId}/activities`
       expectedOutput = { id: userId }
       findByIdStub = this.sinon.stub()
-      eagerStub = this.sinon.stub()
+      withGraphFetchedStub = this.sinon.stub()
       this.sinon.stub(User, 'query').returns({ findById: findByIdStub })
-      findByIdStub.returns({ eager: eagerStub })
+      findByIdStub.returns({ withGraphFetched: withGraphFetchedStub })
     })
     it('searches and responds', async function () {
-      eagerStub.resolves(expectedOutput)
+      withGraphFetchedStub.resolves(expectedOutput)
       users(req, res, nextSpy)
       return res.then(async function () {
         expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
         const findByIdArgs = findByIdStub.getCall(0).args
         expect(findByIdArgs[0]).to.equal(userId)
-        const eagerStubArgs = eagerStub.getCall(0).args
+        const eagerStubArgs = withGraphFetchedStub.getCall(0).args
         expect(eagerStubArgs[0]).to.equal('activities')
       })
     })
     it('passes on errors', async function () {
       const error = new Error('blah')
-      eagerStub.throws(error)
+      withGraphFetchedStub.throws(error)
       users(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)

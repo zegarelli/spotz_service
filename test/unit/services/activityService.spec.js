@@ -6,10 +6,12 @@ const Activity = require('../../../app/models/Activity')
 
 describe('activityService', function () {
   describe('search', function () {
-    let whereStub, queryStub
+    let whereStub, withGraphFetchedStub
     beforeEach(function () {
       whereStub = this.sinon.stub()
-      queryStub = this.sinon.stub(Activity, 'query').returns({ where: whereStub })
+      withGraphFetchedStub = this.sinon.stub()
+      this.sinon.stub(Activity, 'query').returns({ withGraphFetched: withGraphFetchedStub })
+      withGraphFetchedStub.returns({ where: whereStub })
     })
     it('it is a function', function () {
       expect(typeof activityService.search).to.equal('function')
@@ -51,7 +53,7 @@ describe('activityService', function () {
     })
     it('doesnt call where', async function () {
       const activity = { id: '123' }
-      queryStub.returns(activity)
+      withGraphFetchedStub.returns(activity)
       const result = await activityService.search(undefined, undefined, undefined)
       expect(result).to.equal(activity)
       this.sinon.assert.notCalled(whereStub)

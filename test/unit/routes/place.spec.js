@@ -42,15 +42,18 @@ describe('places router', function () {
     })
   })
   describe('/places/:id', function () {
-    let findByIdStub
+    let findByIdStub, withGraphFetchedStub
     beforeEach(function () {
       req.url = '/123abc'
       expectedOutput = { id: '123abc' }
       findByIdStub = this.sinon.stub()
+      withGraphFetchedStub = this.sinon.stub()
+      withGraphFetchedStub = this.sinon.stub()
       this.sinon.stub(Place, 'query').returns({ findById: findByIdStub })
+      findByIdStub.returns({ withGraphFetched: withGraphFetchedStub })
     })
     it('searches and responds', async function () {
-      findByIdStub.resolves(expectedOutput)
+      withGraphFetchedStub.resolves(expectedOutput)
       places(req, res, nextSpy)
       return res.then(async function () {
         expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
@@ -58,7 +61,7 @@ describe('places router', function () {
     })
     it('passes on errors', async function () {
       const error = new Error('blah')
-      findByIdStub.throws(error)
+      withGraphFetchedStub.throws(error)
       places(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)

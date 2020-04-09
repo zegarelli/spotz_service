@@ -58,15 +58,17 @@ describe('activities router', function () {
     })
   })
   describe('/activities/:id', function () {
-    let findByIdStub
+    let findByIdStub, withGraphFetchedStub
     beforeEach(function () {
       req.url = '/123abc'
       expectedOutput = { id: '123abc' }
       findByIdStub = this.sinon.stub()
+      withGraphFetchedStub = this.sinon.stub()
       this.sinon.stub(Activity, 'query').returns({ findById: findByIdStub })
+      findByIdStub.returns({ withGraphFetched: withGraphFetchedStub })
     })
     it('searches and responds', async function () {
-      findByIdStub.resolves(expectedOutput)
+      withGraphFetchedStub.resolves(expectedOutput)
       activities(req, res, nextSpy)
       return res.then(async function () {
         expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
@@ -74,7 +76,7 @@ describe('activities router', function () {
     })
     it('passes on errors', async function () {
       const error = new Error('blah')
-      findByIdStub.throws(error)
+      withGraphFetchedStub.throws(error)
       activities(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)
