@@ -15,12 +15,12 @@ class Activity extends Model {
     const Place = require('./Place')
     const User = require('./User')
     return {
-      creator_id: {
+      creator: {
         relation: Model.BelongsToOneRelation,
         modelClass: User,
         join: {
           from: 'activities.created_by',
-          to: 'user.id'
+          to: 'users.id'
         }
       },
       place: {
