@@ -15,19 +15,19 @@ class Place extends Model {
     const User = require('./User')
     const Activity = require('./Activity')
     return {
-      creator_id: {
+      creator: {
         relation: Model.BelongsToOneRelation,
         modelClass: User,
         join: {
           from: 'places.created_by',
-          to: 'user.id'
+          to: 'users.id'
         }
       },
       activities: {
         relation: Model.HasManyRelation,
         modelClass: Activity,
         join: {
-          from: 'place.id',
+          from: 'places.id',
           to: 'activities.place_id'
         }
       }

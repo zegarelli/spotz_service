@@ -14,7 +14,7 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    res.json(await Place.query().findById(req.params.id))
+    res.json(await Place.query().findById(req.params.id).withGraphFetched('[activities, creator]'))
   } catch (err) {
     next(err)
   }
