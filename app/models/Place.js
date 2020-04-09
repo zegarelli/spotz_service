@@ -1,8 +1,6 @@
 const Knex = require('knex')
 const connection = require('../../knexfile')
 const { Model } = require('objection')
-const User = require('./User')
-const Activity = require('./Activity')
 
 const knexConnection = Knex(connection)
 
@@ -14,6 +12,8 @@ class Place extends Model {
   }
 
   static get relationMappings () {
+    const User = require('./User')
+    const Activity = require('./Activity')
     return {
       creator_id: {
         relation: Model.BelongsToOneRelation,
