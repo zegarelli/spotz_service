@@ -1,7 +1,7 @@
 const Activity = require('../models/Activity')
 
 async function search (name, creator, place) {
-  let query = await Activity.query().withGraphFetched('[place, creator]')
+  let query = await Activity.query().withGraphFetched('[places, creator]')
   query = name ? query.where({ name }) : query
   query = creator ? query.where({ creator }) : query
   query = place ? query.where({ place }) : query
@@ -11,7 +11,7 @@ async function search (name, creator, place) {
 }
 
 async function getById (id) {
-  return Activity.query().withGraphFetched('[place, creator]').findById(id)
+  return Activity.query().withGraphFetched('[places, creator]').findById(id)
 }
 
 module.exports = {

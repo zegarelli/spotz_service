@@ -10,7 +10,7 @@ Model.knex(knexConnection)
 
 class User extends Model {
   static get tableName () {
-    return 'users'
+    return 'user'
   }
 
   static get relationMappings () {
@@ -19,8 +19,8 @@ class User extends Model {
         relation: Model.HasManyRelation,
         modelClass: Place,
         join: {
-          from: 'users.id',
-          to: 'places.created_by'
+          from: 'user.id',
+          to: 'place.created_by'
         }
       },
       activities: {
@@ -28,7 +28,7 @@ class User extends Model {
         modelClass: Activity,
         join: {
           from: 'users.id',
-          to: 'activities.created_by'
+          to: 'activity.created_by'
         }
       }
     }
