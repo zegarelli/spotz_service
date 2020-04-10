@@ -1,10 +1,10 @@
 
 exports.up = async function (knex) {
-  await knex.schema.createTable('places', table => {
-    table.increments('id').primary()
+  await knex.schema.createTable('activity', table => {
+    table.uuid('id').primary()
     table.string('name')
-    table.integer('created_by').references('users.id')
-    table.integer('updated_by').references('users.id')
+    table.uuid('created_by').references('user.id')
+    table.uuid('updated_by').references('user.id')
     table.timestamp('created_at').defaultTo(knex.fn.now())
     table.timestamp('updated_at').defaultTo(knex.fn.now())
     table.json('extended_data')
@@ -12,5 +12,5 @@ exports.up = async function (knex) {
 }
 
 exports.down = async function (knex) {
-  await knex.schema.dropTable('places')
+  await knex.schema.dropTable('activity')
 }
