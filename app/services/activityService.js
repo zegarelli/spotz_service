@@ -10,6 +10,11 @@ async function search (name, creator, place) {
   return query
 }
 
+async function getById (id) {
+  return Activity.query().withGraphFetched('[place, creator]').findById(id)
+}
+
 module.exports = {
-  search
+  search,
+  getById
 }

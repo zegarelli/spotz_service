@@ -1,7 +1,7 @@
 /* global describe, beforeEach, it, expect */
 const { stubRes, createDeferredNext } = require('../../support/testUtil')
 const places = require('../../../app/routes/places')
-const Place = require('../../../app/models/Place')
+const placeService = require('../../../app/services/placeService')
 
 require('../../support/node')
 
@@ -20,11 +20,11 @@ describe('places router', function () {
     nextSpy = this.sinon.spy(createDeferredNext())
   })
   describe('/places', function () {
-    let placeQueryStub
+    let searchStub
     beforeEach(function () {
       expectedOutput = { id: '123abc' }
-      placeQueryStub = this.sinon.stub(Place, 'query')
-      placeQueryStub.resolves(expectedOutput)
+      searchStub = this.sinon.stub(placeService, 'search')
+      searchStub.resolves(expectedOutput)
     })
     it('searches and responds', async function () {
       places(req, res, nextSpy)
@@ -34,7 +34,7 @@ describe('places router', function () {
     })
     it('passes on errors', async function () {
       const error = new Error('blah')
-      placeQueryStub.throws(error)
+      searchStub.throws(error)
       places(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)
@@ -42,18 +42,14 @@ describe('places router', function () {
     })
   })
   describe('/places/:id', function () {
-    let findByIdStub, withGraphFetchedStub
+    let getByIdStub
     beforeEach(function () {
       req.url = '/123abc'
       expectedOutput = { id: '123abc' }
-      findByIdStub = this.sinon.stub()
-      withGraphFetchedStub = this.sinon.stub()
-      withGraphFetchedStub = this.sinon.stub()
-      this.sinon.stub(Place, 'query').returns({ findById: findByIdStub })
-      findByIdStub.returns({ withGraphFetched: withGraphFetchedStub })
+      getByIdStub = this.sinon.stub(placeService, 'getById')
     })
     it('searches and responds', async function () {
-      withGraphFetchedStub.resolves(expectedOutput)
+      getByIdStub.resolves(expectedOutput)
       places(req, res, nextSpy)
       return res.then(async function () {
         expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
@@ -61,7 +57,7 @@ describe('places router', function () {
     })
     it('passes on errors', async function () {
       const error = new Error('blah')
-      withGraphFetchedStub.throws(error)
+      getByIdStub.throws(error)
       places(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)

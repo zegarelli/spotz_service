@@ -59,4 +59,23 @@ describe('activityService', function () {
       this.sinon.assert.notCalled(whereStub)
     })
   })
+  describe('getById', function () {
+    let findByIdStbub
+    beforeEach(function () {
+      findByIdStbub = this.sinon.stub()
+      const withGraphFetchedStub = this.sinon.stub()
+      this.sinon.stub(Activity, 'query').returns({ withGraphFetched: withGraphFetchedStub })
+      withGraphFetchedStub.returns({ findById: findByIdStbub })
+    })
+    it('finds activity by id', async function () {
+      const id = 'abc'
+      const activity = { id: '123' }
+      findByIdStbub.resolves(activity)
+      const result = await activityService.getById(id)
+      expect(result).to.deep.equal(activity)
+
+      const findByIdArgs = findByIdStbub.getCall(0).args
+      expect(findByIdArgs[0]).to.equal(id)
+    })
+  })
 })

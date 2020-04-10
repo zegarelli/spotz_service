@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 
-const Activity = require('../models/Activity')
 const activityService = require('../services/activityService')
 
 /* GET activities listing. */
@@ -11,8 +10,8 @@ router.get('/', async (req, res, next) => {
   const place = req.query.place || null
 
   try {
-    const results = await activityService.search(name, creator, place)
-    res.json(results)
+    const activities = await activityService.search(name, creator, place)
+    res.json(activities)
   } catch (err) {
     err.metaData = {
       ...err.metaData,
@@ -24,7 +23,7 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    res.json(await Activity.query().findById(req.params.id).withGraphFetched('[place, creator]'))
+    res.json(await activityService.getById(req.params.id))
   } catch (err) {
     next(err)
   }

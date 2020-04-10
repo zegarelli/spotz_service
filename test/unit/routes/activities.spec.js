@@ -2,7 +2,6 @@
 const { stubRes, createDeferredNext } = require('../../support/testUtil')
 const activities = require('../../../app/routes/activities')
 const activityService = require('../../../app/services/activityService')
-const Activity = require('../../../app/models/Activity')
 
 require('../../support/node')
 
@@ -58,17 +57,14 @@ describe('activities router', function () {
     })
   })
   describe('/activities/:id', function () {
-    let findByIdStub, withGraphFetchedStub
+    let getByIdStub
     beforeEach(function () {
       req.url = '/123abc'
       expectedOutput = { id: '123abc' }
-      findByIdStub = this.sinon.stub()
-      withGraphFetchedStub = this.sinon.stub()
-      this.sinon.stub(Activity, 'query').returns({ findById: findByIdStub })
-      findByIdStub.returns({ withGraphFetched: withGraphFetchedStub })
+      getByIdStub = this.sinon.stub(activityService, 'getById')
     })
     it('searches and responds', async function () {
-      withGraphFetchedStub.resolves(expectedOutput)
+      getByIdStub.resolves(expectedOutput)
       activities(req, res, nextSpy)
       return res.then(async function () {
         expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
@@ -76,7 +72,7 @@ describe('activities router', function () {
     })
     it('passes on errors', async function () {
       const error = new Error('blah')
-      withGraphFetchedStub.throws(error)
+      getByIdStub.throws(error)
       activities(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)
