@@ -8,7 +8,7 @@ Model.knex(knexConnection)
 
 class Place extends Model {
   static get tableName () {
-    return 'places'
+    return 'place'
   }
 
   static get relationMappings () {
@@ -19,16 +19,20 @@ class Place extends Model {
         relation: Model.BelongsToOneRelation,
         modelClass: User,
         join: {
-          from: 'places.created_by',
-          to: 'users.id'
+          from: 'place.created_by',
+          to: 'user.id'
         }
       },
       activities: {
-        relation: Model.HasManyRelation,
+        relation: Model.ManyToManyRelation,
         modelClass: Activity,
         join: {
-          from: 'places.id',
-          to: 'activities.place_id'
+          from: 'place.id',
+          through: {
+            from: 'place_activity.place_id',
+            to: 'place_activity.activity_id'
+          },
+          to: 'activity.id'
         }
       }
     }
