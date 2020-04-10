@@ -13,7 +13,7 @@ class Place extends Model {
 
   static get relationMappings () {
     const User = require('./User')
-    const Activity = require('./Activity')
+    const PlaceActivity = require('./PlaceActivity')
     return {
       creator: {
         relation: Model.BelongsToOneRelation,
@@ -23,16 +23,12 @@ class Place extends Model {
           to: 'user.id'
         }
       },
-      activities: {
-        relation: Model.ManyToManyRelation,
-        modelClass: Activity,
+      placeActivities: {
+        relation: Model.HasManyRelation,
+        modelClass: PlaceActivity,
         join: {
           from: 'place.id',
-          through: {
-            from: 'place_activity.place_id',
-            to: 'place_activity.activity_id'
-          },
-          to: 'activity.id'
+          to: 'place_activity.place_id'
         }
       }
     }

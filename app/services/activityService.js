@@ -1,17 +1,25 @@
 const Activity = require('../models/Activity')
 
 async function search (name, creator, place) {
-  let query = await Activity.query().withGraphFetched('[places, creator]')
+  let query = await Activity.query()
+    .withGraphFetched('[placeActivities(selectIdAndDescription).place(selectNameAndId)]')
+    .modifiers({
+      selectNameAndId (builder) {
+        builder.select('name', 'id')
+      },
+      selectIdAndDescription (builder) {
+        builder.select('id', 'details')
+      }
+    })
   query = name ? query.where({ name }) : query
   query = creator ? query.where({ creator }) : query
   query = place ? query.where({ place }) : query
-  //   query = after ? query.where('createdAt', '>=', after) : query
-  //   query = before ? query.where('createdAt', '<=', before) : query
+
   return query
 }
 
 async function getById (id) {
-  return Activity.query().withGraphFetched('[places, creator]').findById(id)
+  return Activity.query().withGraphFetched('[placeActivities.place, creator]').findById(id)
 }
 
 module.exports = {
