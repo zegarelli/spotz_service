@@ -1,4 +1,5 @@
 const Place = require('../models/Place')
+const PlaceActivity = require('../models/PlaceActivity')
 const uuid = require('uuid')
 
 async function search (name, creator) {
@@ -18,23 +19,24 @@ async function search (name, creator) {
 }
 
 async function create (data) {
-  const activities = []
-  if (data.activities && data.activities.length) {
-    activities.forEach(activity => {
-      activities.push({ activity_id: activity })
-    })
-  }
-
-  const result = await Place.query().insertGraph({
+  const result = await Place.query().insert({
     id: uuid.v4(),
     name: data.name,
-    extended_data: { description: data.description },
-    placeActivities: activities
+    extended_data: { description: data.description }
   }).returning('*')
 
-  // if (data.activities && data.activities.length) {
-
-  // }
+  // Create PlaceActivities if needed
+  if (data.activities && data.activities.length) {
+    const activities = []
+    await data.activities.forEach(activity => {
+      activities.push({
+        id: uuid.v4(),
+        activity_id: activity,
+        place_id: result.id
+      })
+    })
+    result.activities = await PlaceActivity.query().insertGraph(activities).returning('*')
+  }
   return result
 }
 
