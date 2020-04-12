@@ -19,7 +19,7 @@ describe('places router', function () {
     res = stubRes()
     nextSpy = this.sinon.spy(createDeferredNext())
   })
-  describe('/places', function () {
+  describe('GET /places', function () {
     let searchStub
     beforeEach(function () {
       expectedOutput = { id: '123abc' }
@@ -35,6 +35,29 @@ describe('places router', function () {
     it('passes on errors', async function () {
       const error = new Error('blah')
       searchStub.throws(error)
+      places(req, res, nextSpy)
+      return nextSpy.then(() => {
+        expect(nextSpy).calledWith(error)
+      })
+    })
+  })
+  describe('POST /places', function () {
+    let createStub
+    beforeEach(function () {
+      expectedOutput = { id: '123abc' }
+      createStub = this.sinon.stub(placeService, 'create')
+      createStub.resolves(expectedOutput)
+      req.method = 'POST'
+    })
+    it('creates and responds', async function () {
+      places(req, res, nextSpy)
+      return res.then(async function () {
+        expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
+      })
+    })
+    it('passes on errors', async function () {
+      const error = new Error('blah')
+      createStub.throws(error)
       places(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)

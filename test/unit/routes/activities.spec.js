@@ -19,7 +19,7 @@ describe('activities router', function () {
     res = stubRes()
     nextSpy = this.sinon.spy(createDeferredNext())
   })
-  describe('/activities', function () {
+  describe('GET /activities', function () {
     let activityServiceStub
     beforeEach(function () {
       expectedOutput = { id: '123abc' }
@@ -50,6 +50,29 @@ describe('activities router', function () {
     it('passes on errors', async function () {
       const error = new Error('blah')
       activityServiceStub.throws(error)
+      activities(req, res, nextSpy)
+      return nextSpy.then(() => {
+        expect(nextSpy).calledWith(error)
+      })
+    })
+  })
+  describe('POST /activities', function () {
+    let createStub
+    beforeEach(function () {
+      req.method = 'POST'
+      expectedOutput = { id: '123abc' }
+      createStub = this.sinon.stub(activityService, 'create')
+    })
+    it('searches and responds', async function () {
+      createStub.resolves(expectedOutput)
+      activities(req, res, nextSpy)
+      return res.then(async function () {
+        expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
+      })
+    })
+    it('passes on errors', async function () {
+      const error = new Error('blah')
+      createStub.throws(error)
       activities(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)
