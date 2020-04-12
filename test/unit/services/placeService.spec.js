@@ -3,15 +3,19 @@
 require('../../support/node')
 const placeService = require('../../../app/services/placeService')
 const Place = require('../../../app/models/Place')
+const PlaceActivity = require('../../../app/models/PlaceActivity')
+const uuid = require('uuid')
 
 describe('placeService', function () {
   describe('search', function () {
-    let whereStub, withGraphFetchedStub
+    let whereStub, withGraphFetchedStub, modifiersStub
     beforeEach(function () {
       whereStub = this.sinon.stub()
+      modifiersStub = this.sinon.stub()
       withGraphFetchedStub = this.sinon.stub()
       this.sinon.stub(Place, 'query').returns({ withGraphFetched: withGraphFetchedStub })
-      withGraphFetchedStub.returns({ where: whereStub })
+      withGraphFetchedStub.returns({ modifiers: modifiersStub })
+      modifiersStub.returns({ where: whereStub })
     })
     it('it is a function', function () {
       expect(typeof placeService.search).to.equal('function')
@@ -45,10 +49,56 @@ describe('placeService', function () {
     })
     it('doesnt call where', async function () {
       const place = { id: '123' }
-      withGraphFetchedStub.returns(place)
+      modifiersStub.returns(place)
       const result = await placeService.search(undefined, undefined)
       expect(result).to.equal(place)
       this.sinon.assert.notCalled(whereStub)
+    })
+  })
+  describe('create', function () {
+    let insertStub, insertGraphStub, returningStub, placeExpectedResult, placeActivityExpectedResult, data
+    beforeEach(function () {
+      data = {
+        name: 'Some Fresh New Place',
+        description: 'Yo the best place around',
+        activities: [uuid.v4(), uuid.v4()]
+      }
+
+      placeExpectedResult = { id: uuid.v4() }
+      placeActivityExpectedResult = { id: uuid.v4() }
+      insertStub = this.sinon.stub()
+      insertGraphStub = this.sinon.stub()
+      returningStub = this.sinon.stub()
+      this.sinon.stub(Place, 'query').returns({ insert: insertStub })
+      this.sinon.stub(PlaceActivity, 'query').returns({ insertGraph: insertGraphStub })
+      insertStub.returns({ returning: returningStub })
+      insertGraphStub.returns({ returning: returningStub })
+      returningStub.onFirstCall().returns(placeExpectedResult)
+      returningStub.onSecondCall().returns(placeActivityExpectedResult)
+    })
+    it('Creates a new Place & PlaceActivities', async function () {
+      const result = await placeService.create(data)
+      expect(result).to.deep.equal({ ...placeExpectedResult, activities: placeActivityExpectedResult })
+
+      const insertData = insertStub.getCall(0).args[0]
+      delete insertData.id
+      expect(insertData).to.deep.equal({
+        name: data.name,
+        extended_data: { description: data.description }
+      })
+
+      const insertGraphData = insertGraphStub.getCall(0).args[0]
+      const firstPlaceActivityData = insertGraphData[0]
+      delete firstPlaceActivityData.id
+      expect(firstPlaceActivityData).to.deep.equal({
+        activity_id: data.activities[0],
+        place_id: placeExpectedResult.id
+      })
+    })
+    it('Doesn\'t create PlaceActivities when none are provided', async function () {
+      delete data.activities
+      const result = await placeService.create(data)
+      expect(result).to.deep.equal(placeExpectedResult)
     })
   })
   describe('getById', function () {

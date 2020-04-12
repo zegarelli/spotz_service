@@ -37,7 +37,7 @@ async function create (data) {
         place_id: place
       })
     })
-    result.activities = await PlaceActivity.query().insertGraph(places).returning('*')
+    result.places = await PlaceActivity.query().insertGraph(places).returning('*')
   }
   return result
 }
