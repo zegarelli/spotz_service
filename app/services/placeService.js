@@ -39,7 +39,7 @@ async function create (data) {
 
   // Create PlaceActivities if needed
   if (data.activities && data.activities.length) {
-    const placeActivities = await mapPlaceActivityForCreate(data.activities)
+    const placeActivities = await mapPlaceActivityForCreate(data.activities, result.id)
     result.activities = await PlaceActivity.query().insertGraph(placeActivities).returning('*')
   }
   return result
