@@ -1,5 +1,6 @@
 const Place = require('../models/Place')
 const PlaceActivity = require('../models/PlaceActivity')
+const placeActivityService = require('./placeActivityService')
 const uuid = require('uuid')
 
 async function mapPlaceActivityForCreate (activityIds, placeId) {
@@ -40,7 +41,7 @@ async function create (data) {
   // Create PlaceActivities if needed
   if (data.activities && data.activities.length) {
     const placeActivities = await mapPlaceActivityForCreate(data.activities, result.id)
-    result.activities = await PlaceActivity.query().insertGraph(placeActivities).returning('*')
+    result.activities = await placeActivityService.createMultiple(placeActivities)
   }
   return result
 }
@@ -51,13 +52,12 @@ async function update (id, data) {
     'extended_data:description': data.description
   })
 
-  const existingActivities = await PlaceActivity.query()
-    .select('id', 'activity_id')
-    .where({ place_id: id })
+  const existingActivities = await placeActivityService.findByPlaceId(result.id)
 
   const needsDeleted = existingActivities.filter((existing) => {
     return data.activities.indexOf(existing.activity_id) < 0
   }).map(obj => obj.id)
+
   const needsCreated = data.activities.filter((activity) => {
     for (const existing of existingActivities) {
       if (existing.activity_id === activity) {
@@ -69,8 +69,8 @@ async function update (id, data) {
 
   const placeActivities = await mapPlaceActivityForCreate(needsCreated, id)
 
-  result.createdPlaceActivities = await PlaceActivity.query().insertGraph(placeActivities).returning('*')
-  result.deletedPlaceActivities = await PlaceActivity.query().delete().whereIn('id', needsDeleted)
+  result.createdPlaceActivities = await placeActivityService.createMultiple(placeActivities)
+  result.deletedPlaceActivities = await placeActivityService.deleteMultiple(needsDeleted)
   return result
 }
 

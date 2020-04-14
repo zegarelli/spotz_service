@@ -55,6 +55,7 @@ describe('placeService', function () {
       this.sinon.assert.notCalled(whereStub)
     })
   })
+
   describe('create', function () {
     let insertStub, insertGraphStub, returningStub, placeExpectedResult, placeActivityExpectedResult, data
     beforeEach(function () {
@@ -101,6 +102,53 @@ describe('placeService', function () {
       expect(result).to.deep.equal(placeExpectedResult)
     })
   })
+
+  describe('update', function () {
+    let id, data, patchAndFetchByIdSub, insertGraphStub, returningStub,
+      patchExpectedResult, placeActivityExpectedResult
+    beforeEach(function () {
+      id = uuid.v4()
+      data = {
+        name: 'Some Fresh New Place',
+        description: 'Yo the best place around',
+        activities: [uuid.v4(), uuid.v4()]
+      }
+
+      patchExpectedResult = { id: uuid.v4() }
+
+      patchAndFetchByIdSub = this.sinon.stub()
+      insertGraphStub = this.sinon.stub()
+      this.sinon.stub(Place, 'query').returns({ insert: patchAndFetchByIdSub })
+      this.sinon.stub(PlaceActivity, 'query').returns({ insertGraph: insertGraphStub })
+      patchAndFetchByIdSub.returns(patchExpectedResult)
+      insertGraphStub.returns({ returning: returningStub })
+    })
+    it('Creates a new Place & PlaceActivities', async function () {
+      const result = await placeService.create(data)
+      expect(result).to.deep.equal({ ...placeExpectedResult, activities: placeActivityExpectedResult })
+
+      const insertData = insertStub.getCall(0).args[0]
+      delete insertData.id
+      expect(insertData).to.deep.equal({
+        name: data.name,
+        extended_data: { description: data.description }
+      })
+
+      const insertGraphData = insertGraphStub.getCall(0).args[0]
+      const firstPlaceActivityData = insertGraphData[0]
+      delete firstPlaceActivityData.id
+      expect(firstPlaceActivityData).to.deep.equal({
+        activity_id: data.activities[0],
+        place_id: placeExpectedResult.id
+      })
+    })
+    it('Doesn\'t create PlaceActivities when none are provided', async function () {
+      delete data.activities
+      const result = await placeService.create(data)
+      expect(result).to.deep.equal(placeExpectedResult)
+    })
+  })
+
   describe('getById', function () {
     let findByIdStbub
     beforeEach(function () {
