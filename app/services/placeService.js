@@ -1,7 +1,7 @@
 const Place = require('../models/Place')
-const PlaceActivity = require('../models/PlaceActivity')
 const placeActivityService = require('./placeActivityService')
 const uuid = require('uuid')
+const { selectIdAndDescription, selectNameAndId } = require('./common/builders')
 
 async function mapPlaceActivityForCreate (activityIds, placeId) {
   const placeActivities = []
@@ -19,12 +19,8 @@ async function search (name, creator) {
   let query = await Place.query()
     .withGraphFetched('[placeActivities(selectIdAndDescription).activity(selectNameAndId)]')
     .modifiers({
-      selectNameAndId (builder) {
-        builder.select('name', 'id')
-      },
-      selectIdAndDescription (builder) {
-        builder.select('id', 'details')
-      }
+      selectNameAndId,
+      selectIdAndDescription
     })
   query = name ? query.where({ name }) : query
   query = creator ? query.where({ creator }) : query
@@ -69,8 +65,12 @@ async function update (id, data) {
 
   const placeActivities = await mapPlaceActivityForCreate(needsCreated, id)
 
-  result.createdPlaceActivities = await placeActivityService.createMultiple(placeActivities)
-  result.deletedPlaceActivities = await placeActivityService.deleteMultiple(needsDeleted)
+  if (placeActivities.length) {
+    result.createdPlaceActivities = await placeActivityService.createMultiple(placeActivities)
+  }
+  if (needsDeleted.length) {
+    result.deletedPlaceActivities = await placeActivityService.deleteMultiple(needsDeleted)
+  }
   return result
 }
 

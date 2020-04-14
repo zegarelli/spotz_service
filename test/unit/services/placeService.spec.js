@@ -3,7 +3,7 @@
 require('../../support/node')
 const placeService = require('../../../app/services/placeService')
 const Place = require('../../../app/models/Place')
-const PlaceActivity = require('../../../app/models/PlaceActivity')
+const placeActivityService = require('../../../app/services/placeActivityService')
 const uuid = require('uuid')
 
 describe('placeService', function () {
@@ -57,29 +57,28 @@ describe('placeService', function () {
   })
 
   describe('create', function () {
-    let insertStub, insertGraphStub, returningStub, placeExpectedResult, placeActivityExpectedResult, data
+    let insertStub, returningStub, placeExpectedResult, data, createMultipleStub, activities
     beforeEach(function () {
+      activities = [uuid.v4(), uuid.v4()]
       data = {
         name: 'Some Fresh New Place',
         description: 'Yo the best place around',
-        activities: [uuid.v4(), uuid.v4()]
+        activities
       }
 
       placeExpectedResult = { id: uuid.v4() }
-      placeActivityExpectedResult = { id: uuid.v4() }
       insertStub = this.sinon.stub()
-      insertGraphStub = this.sinon.stub()
       returningStub = this.sinon.stub()
       this.sinon.stub(Place, 'query').returns({ insert: insertStub })
-      this.sinon.stub(PlaceActivity, 'query').returns({ insertGraph: insertGraphStub })
       insertStub.returns({ returning: returningStub })
-      insertGraphStub.returns({ returning: returningStub })
       returningStub.onFirstCall().returns(placeExpectedResult)
-      returningStub.onSecondCall().returns(placeActivityExpectedResult)
+
+      createMultipleStub = this.sinon.stub(placeActivityService, 'createMultiple')
+        .resolves(activities)
     })
     it('Creates a new Place & PlaceActivities', async function () {
       const result = await placeService.create(data)
-      expect(result).to.deep.equal({ ...placeExpectedResult, activities: placeActivityExpectedResult })
+      expect(result).to.deep.equal({ ...placeExpectedResult, activities })
 
       const insertData = insertStub.getCall(0).args[0]
       delete insertData.id
@@ -88,13 +87,19 @@ describe('placeService', function () {
         extended_data: { description: data.description }
       })
 
-      const insertGraphData = insertGraphStub.getCall(0).args[0]
-      const firstPlaceActivityData = insertGraphData[0]
-      delete firstPlaceActivityData.id
-      expect(firstPlaceActivityData).to.deep.equal({
-        activity_id: data.activities[0],
-        place_id: placeExpectedResult.id
-      })
+      const createMultipleArgs = createMultipleStub.getCall(0).args[0]
+      delete createMultipleArgs[0].id
+      delete createMultipleArgs[1].id
+      expect(createMultipleArgs).to.deep.equal([
+        {
+          activity_id: activities[0],
+          place_id: placeExpectedResult.id
+        },
+        {
+          activity_id: activities[1],
+          place_id: placeExpectedResult.id
+        }
+      ])
     })
     it('Doesn\'t create PlaceActivities when none are provided', async function () {
       delete data.activities
@@ -104,8 +109,9 @@ describe('placeService', function () {
   })
 
   describe('update', function () {
-    let id, data, patchAndFetchByIdSub, insertGraphStub, returningStub,
-      patchExpectedResult, placeActivityExpectedResult
+    let id, data, patchAndFetchByIdSub,
+      patchExpectedResult, createdPlaceActivities, deletedPlaceActivities,
+      createMultipleStub, existingPlaceActivities, deleteMultipleStub
     beforeEach(function () {
       id = uuid.v4()
       data = {
@@ -114,38 +120,50 @@ describe('placeService', function () {
         activities: [uuid.v4(), uuid.v4()]
       }
 
-      patchExpectedResult = { id: uuid.v4() }
+      patchExpectedResult = { id }
 
       patchAndFetchByIdSub = this.sinon.stub()
-      insertGraphStub = this.sinon.stub()
-      this.sinon.stub(Place, 'query').returns({ insert: patchAndFetchByIdSub })
-      this.sinon.stub(PlaceActivity, 'query').returns({ insertGraph: insertGraphStub })
+      this.sinon.stub(Place, 'query').returns({ patchAndFetchById: patchAndFetchByIdSub })
       patchAndFetchByIdSub.returns(patchExpectedResult)
-      insertGraphStub.returns({ returning: returningStub })
-    })
-    it('Creates a new Place & PlaceActivities', async function () {
-      const result = await placeService.create(data)
-      expect(result).to.deep.equal({ ...placeExpectedResult, activities: placeActivityExpectedResult })
 
-      const insertData = insertStub.getCall(0).args[0]
-      delete insertData.id
-      expect(insertData).to.deep.equal({
-        name: data.name,
-        extended_data: { description: data.description }
+      existingPlaceActivities = [
+        { id: uuid.v4(), activity_id: data.activities[0], name: 'no change' },
+        { id: uuid.v4(), activity_id: uuid.v4(), name: 'needs deleted' }
+      ]
+      this.sinon.stub(placeActivityService, 'findByPlaceId')
+        .resolves(existingPlaceActivities)
+
+      createdPlaceActivities = [{ id: data.activities[1] }]
+      deletedPlaceActivities = [existingPlaceActivities[1]]
+
+      createMultipleStub = this.sinon.stub(placeActivityService, 'createMultiple')
+        .resolves(createdPlaceActivities)
+      deleteMultipleStub = this.sinon.stub(placeActivityService, 'deleteMultiple')
+        .resolves(deletedPlaceActivities)
+    })
+    it('Updates the specified place, and handles activities properly', async function () {
+      const result = await placeService.update(id, data)
+      expect(result).to.deep.equal({
+        ...patchExpectedResult,
+        createdPlaceActivities,
+        deletedPlaceActivities
       })
 
-      const insertGraphData = insertGraphStub.getCall(0).args[0]
-      const firstPlaceActivityData = insertGraphData[0]
-      delete firstPlaceActivityData.id
-      expect(firstPlaceActivityData).to.deep.equal({
-        activity_id: data.activities[0],
-        place_id: placeExpectedResult.id
-      })
+      const createMultipleArgs = createMultipleStub.getCall(0).args[0]
+      delete createMultipleArgs[0].id
+      expect(createMultipleArgs).to.deep.equal([{
+        activity_id: data.activities[1],
+        place_id: result.id
+      }])
+
+      const deleteMultipleArgs = deleteMultipleStub.getCall(0).args[0]
+      delete deleteMultipleArgs[0].id
+      expect(deleteMultipleArgs).to.deep.equal([existingPlaceActivities[1].id])
     })
-    it('Doesn\'t create PlaceActivities when none are provided', async function () {
-      delete data.activities
-      const result = await placeService.create(data)
-      expect(result).to.deep.equal(placeExpectedResult)
+    it('Doesn\'t create PlaceActivities when provided match existing', async function () {
+      existingPlaceActivities[1].activity_id = data.activities[1]
+      const result = await placeService.update(id, data)
+      expect(result).to.deep.equal(patchExpectedResult)
     })
   })
 
