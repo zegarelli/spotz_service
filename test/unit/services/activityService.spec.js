@@ -3,7 +3,7 @@
 require('../../support/node')
 const activityService = require('../../../app/services/activityService')
 const Activity = require('../../../app/models/Activity')
-const PlaceActivity = require('../../../app/models/PlaceActivity')
+const placeActivityService = require('../../../app/services/placeActivityService')
 const uuid = require('uuid')
 
 describe('activityService', function () {
@@ -64,7 +64,8 @@ describe('activityService', function () {
     })
   })
   describe('create', function () {
-    let insertStub, insertGraphStub, returningStub, activityExpectedResult, placeActivityExpectedResult, data
+    let insertStub, returningStub, activityExpectedResult, data,
+      createMultipleStub, createMultipleResult
     beforeEach(function () {
       data = {
         name: 'Some Fresh New Activity',
@@ -73,20 +74,19 @@ describe('activityService', function () {
       }
 
       activityExpectedResult = { id: uuid.v4() }
-      placeActivityExpectedResult = { id: uuid.v4() }
       insertStub = this.sinon.stub()
-      insertGraphStub = this.sinon.stub()
       returningStub = this.sinon.stub()
       this.sinon.stub(Activity, 'query').returns({ insert: insertStub })
-      this.sinon.stub(PlaceActivity, 'query').returns({ insertGraph: insertGraphStub })
       insertStub.returns({ returning: returningStub })
-      insertGraphStub.returns({ returning: returningStub })
-      returningStub.onFirstCall().returns(activityExpectedResult)
-      returningStub.onSecondCall().returns(placeActivityExpectedResult)
+      returningStub.returns(activityExpectedResult)
+
+      createMultipleResult = { id: uuid.v4() }
+      createMultipleStub = this.sinon.stub(placeActivityService, 'createMultiple')
+        .resolves(createMultipleResult)
     })
     it('Creates a new Place & PlaceActivities', async function () {
       const result = await activityService.create(data)
-      expect(result).to.deep.equal({ ...activityExpectedResult, places: placeActivityExpectedResult })
+      expect(result).to.deep.equal({ ...activityExpectedResult, places: createMultipleResult })
 
       const insertData = insertStub.getCall(0).args[0]
       delete insertData.id
@@ -95,13 +95,19 @@ describe('activityService', function () {
         extended_data: { description: data.description }
       })
 
-      const insertGraphData = insertGraphStub.getCall(0).args[0]
-      const firstPlaceActivityData = insertGraphData[0]
-      delete firstPlaceActivityData.id
-      expect(firstPlaceActivityData).to.deep.equal({
-        activity_id: activityExpectedResult.id,
-        place_id: data.places[0]
-      })
+      const createMultipleArgs = createMultipleStub.getCall(0).args[0]
+      delete createMultipleArgs[0].id
+      delete createMultipleArgs[1].id
+      expect(createMultipleArgs).to.deep.equal([
+        {
+          place_id: data.places[0],
+          activity_id: activityExpectedResult.id
+        },
+        {
+          place_id: data.places[1],
+          activity_id: activityExpectedResult.id
+        }
+      ])
     })
     it('Doesn\'t create PlaceActivities when none are provided', async function () {
       delete data.activities

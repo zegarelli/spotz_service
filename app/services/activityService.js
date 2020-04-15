@@ -1,17 +1,14 @@
 const Activity = require('../models/Activity')
-const PlaceActivity = require('../models/PlaceActivity')
+const placeActivityService = require('../services/placeActivityService')
+const { selectIdAndDescription, selectNameAndId } = require('./common/builders')
 const uuid = require('uuid')
 
 async function search (name, creator, place) {
   let query = await Activity.query()
     .withGraphFetched('[placeActivities(selectIdAndDescription).place(selectNameAndId)]')
     .modifiers({
-      selectNameAndId (builder) {
-        builder.select('name', 'id')
-      },
-      selectIdAndDescription (builder) {
-        builder.select('id', 'details')
-      }
+      selectNameAndId,
+      selectIdAndDescription
     })
   query = name ? query.where({ name }) : query
   query = creator ? query.where({ creator }) : query
@@ -37,7 +34,7 @@ async function create (data) {
         place_id: place
       })
     })
-    result.places = await PlaceActivity.query().insertGraph(places).returning('*')
+    result.places = await placeActivityService.createMultiple(places)
   }
   return result
 }
