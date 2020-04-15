@@ -7,7 +7,7 @@ exports.up = async function (knex) {
     table.uuid('updated_by').references('user.id')
     table.timestamp('created_at').defaultTo(knex.fn.now())
     table.timestamp('updated_at').defaultTo(knex.fn.now())
-    table.json('extended_data')
+    table.jsonb('extended_data')
   })
 }
 
