@@ -2,6 +2,7 @@
 const { stubRes, createDeferredNext } = require('../../support/testUtil')
 const activities = require('../../../app/routes/activities')
 const activityService = require('../../../app/services/activityService')
+const uuid = require('uuid')
 
 require('../../support/node')
 
@@ -73,6 +74,35 @@ describe('activities router', function () {
     it('passes on errors', async function () {
       const error = new Error('blah')
       createStub.throws(error)
+      activities(req, res, nextSpy)
+      return nextSpy.then(() => {
+        expect(nextSpy).calledWith(error)
+      })
+    })
+  })
+  describe('PUT /places/:id', function () {
+    let updateStub, id
+    beforeEach(function () {
+      id = uuid.v4()
+      expectedOutput = { id }
+      updateStub = this.sinon.stub(activityService, 'update')
+      updateStub.resolves(expectedOutput)
+      req.method = 'put'
+      req.url = `/${id}`
+      req.body = { data: 'some data' }
+    })
+    it('updates and responds', async function () {
+      activities(req, res, nextSpy)
+      return res.then(async function () {
+        expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
+
+        const updateArgs = updateStub.getCall(0).args
+        expect(updateArgs).to.deep.equal([id, req.body])
+      })
+    })
+    it('passes on errors', async function () {
+      const error = new Error('blah')
+      updateStub.throws(error)
       activities(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)

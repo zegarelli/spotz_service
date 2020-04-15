@@ -50,14 +50,14 @@ async function update (id, data) {
     'extended_data:description': data.description
   })
 
-  const existingActivities = await placeActivityService.findByActivityId(result.id)
+  const existingPlaces = await placeActivityService.findByActivityId(result.id)
 
-  const needsDeleted = existingActivities.filter((existing) => {
+  const needsDeleted = existingPlaces.filter((existing) => {
     return data.places.indexOf(existing.place_id) < 0
   }).map(obj => obj.id)
 
   const needsCreated = data.places.filter((activity) => {
-    for (const existing of existingActivities) {
+    for (const existing of existingPlaces) {
       if (existing.place_id === activity) {
         return
       }
