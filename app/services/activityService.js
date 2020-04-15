@@ -1,6 +1,18 @@
 const Activity = require('../models/Activity')
 const placeActivityService = require('../services/placeActivityService')
 const { selectIdAndDescription, selectNameAndId } = require('./common/builders')
+
+async function mapPlaceActivityForCreate (placeIds, activityId) {
+  const placeActivities = []
+  await placeIds.forEach(place => {
+    placeActivities.push({
+      id: uuid.v4(),
+      activity_id: activityId,
+      place_id: place
+    })
+  })
+  return placeActivities
+}
 const uuid = require('uuid')
 
 async function search (name, creator, place) {
@@ -26,15 +38,40 @@ async function create (data) {
 
   // Create PlaceActivities if needed
   if (data.places && data.places.length) {
-    const places = []
-    await data.places.forEach(place => {
-      places.push({
-        id: uuid.v4(),
-        activity_id: result.id,
-        place_id: place
-      })
-    })
-    result.places = await placeActivityService.createMultiple(places)
+    const placeActivities = await mapPlaceActivityForCreate(data.places, result.id)
+    result.places = await placeActivityService.createMultiple(placeActivities)
+  }
+  return result
+}
+
+async function update (id, data) {
+  const result = await Activity.query().patchAndFetchById(id, {
+    name: data.name,
+    'extended_data:description': data.description
+  })
+
+  const existingActivities = await placeActivityService.findByActivityId(result.id)
+
+  const needsDeleted = existingActivities.filter((existing) => {
+    return data.places.indexOf(existing.place_id) < 0
+  }).map(obj => obj.id)
+
+  const needsCreated = data.places.filter((activity) => {
+    for (const existing of existingActivities) {
+      if (existing.place_id === activity) {
+        return
+      }
+    }
+    return true
+  })
+
+  const placeActivities = await mapPlaceActivityForCreate(needsCreated, id)
+
+  if (placeActivities.length) {
+    result.createdPlaceActivities = await placeActivityService.createMultiple(placeActivities)
+  }
+  if (needsDeleted.length) {
+    result.deletedPlaceActivities = await placeActivityService.deleteMultiple(needsDeleted)
   }
   return result
 }
@@ -46,5 +83,6 @@ async function getById (id) {
 module.exports = {
   search,
   create,
+  update,
   getById
 }

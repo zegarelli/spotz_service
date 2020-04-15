@@ -21,8 +21,16 @@ async function findByPlaceId (id) {
   return placeActivity
 }
 
+async function findByActivityId (id) {
+  const placeActivity = await PlaceActivity.query()
+    .select('id', 'place_id')
+    .where({ activity_id: id })
+  return placeActivity
+}
+
 module.exports = {
   createMultiple,
   deleteMultiple,
-  findByPlaceId
+  findByPlaceId,
+  findByActivityId
 }
