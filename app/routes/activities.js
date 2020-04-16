@@ -30,6 +30,15 @@ router.post('/', async (req, res, next) => {
   }
 })
 
+router.put('/:id', async (req, res, next) => {
+  try {
+    const result = await activityService.update(req.params.id, req.body)
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+})
+
 router.get('/:id', async (req, res, next) => {
   try {
     res.json(await activityService.getById(req.params.id))

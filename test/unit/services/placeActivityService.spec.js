@@ -64,4 +64,25 @@ describe('placeActivityService', function () {
       expect(selectArgs).to.deep.equal(['id', 'activity_id'])
     })
   })
+  describe('findByActivityId', function () {
+    let whereStub, selectStub
+    beforeEach(function () {
+      whereStub = this.sinon.stub()
+      selectStub = this.sinon.stub().returns({ where: whereStub })
+      this.sinon.stub(PlaceActivity, 'query').returns({ select: selectStub })
+    })
+    it('finds by activityId', async function () {
+      const foundPlaceActivity = { id: uuid.v4() }
+      const idToFind = uuid.v4()
+      whereStub.returns(foundPlaceActivity)
+      const result = await placeActivityService.findByActivityId(idToFind)
+      expect(result).to.equal(foundPlaceActivity)
+
+      const whereArgs = whereStub.getCall(0).args
+      expect(whereArgs).to.deep.equal([{ activity_id: idToFind }])
+
+      const selectArgs = selectStub.getCall(0).args
+      expect(selectArgs).to.deep.equal(['id', 'place_id'])
+    })
+  })
 })
