@@ -14,7 +14,7 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    res.json(await User.query().findById(req.params.id).withGraphFetched('[places, activities]'))
+    res.json(await User.query().findById(req.params.id).withGraphFetched('[places, activities, scopes]'))
   } catch (err) {
     next(err)
   }

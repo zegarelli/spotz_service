@@ -39,7 +39,6 @@ const guard = (function () {
           }
           userService.getUserScopes(decodedToken.email)
             .then(permissions => {
-              console.log('permissions')
               const sufficient = sufficientCheck(requiredPermissions, permissions)
               return next(!sufficient ? new PermissionError('insufficient permissions') : null)
             })

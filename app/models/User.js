@@ -28,7 +28,7 @@ class User extends Model {
         relation: Model.HasManyRelation,
         modelClass: Activity,
         join: {
-          from: 'users.id',
+          from: 'user.id',
           to: 'activity.created_by'
         }
       },
@@ -36,7 +36,7 @@ class User extends Model {
         relation: Model.ManyToManyRelation,
         modelClass: Scope,
         join: {
-          from: 'users.id',
+          from: 'user.id',
           through: {
             from: 'user_scope.user_id',
             to: 'user_scope.scope_id'
