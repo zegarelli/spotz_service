@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
-
+const guard = require('../common/guard')
 const activityService = require('../services/activityService')
 
 /* GET activities listing. */
-router.get('/', async (req, res, next) => {
+router.get('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
   const name = req.query.name || null
   const creator = req.query.creator || null
   const place = req.query.place || null
