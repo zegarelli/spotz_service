@@ -1,6 +1,6 @@
 const allowedOrigins = [
   'http://localhost:3000',
-  'http://yourapp.com'
+  'http://spotz.world'
 ]
 
 module.exports = {
