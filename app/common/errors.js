@@ -14,7 +14,17 @@ class PermissionError extends Error {
   }
 }
 
+class TokenError extends Error {
+  constructor (message, err) {
+    super(message)
+    this.message = message
+    this.statusCode = 401
+    this.err = err
+  }
+}
+
 module.exports = {
   UnauthorizedError,
-  PermissionError
+  PermissionError,
+  TokenError
 }
