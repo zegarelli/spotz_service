@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-
+const guard = require('../common/guard')
 const activityService = require('../services/activityService')
 
 /* GET activities listing. */
@@ -21,7 +21,7 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-router.post('/', async (req, res, next) => {
+router.post('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
   try {
     const result = await activityService.create(req.body)
     res.json(result)
@@ -30,7 +30,7 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', guard.checkAny(['admin:manage']), async (req, res, next) => {
   try {
     const result = await activityService.update(req.params.id, req.body)
     res.json(result)

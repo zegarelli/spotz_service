@@ -14,6 +14,7 @@ class User extends Model {
   }
 
   static get relationMappings () {
+    const Scope = require('./Scope')
     return {
       places: {
         relation: Model.HasManyRelation,
@@ -27,8 +28,20 @@ class User extends Model {
         relation: Model.HasManyRelation,
         modelClass: Activity,
         join: {
-          from: 'users.id',
+          from: 'user.id',
           to: 'activity.created_by'
+        }
+      },
+      scopes: {
+        relation: Model.ManyToManyRelation,
+        modelClass: Scope,
+        join: {
+          from: 'user.id',
+          through: {
+            from: 'user_scope.user_id',
+            to: 'user_scope.scope_id'
+          },
+          to: 'scope.id'
         }
       }
     }

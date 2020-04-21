@@ -4,7 +4,7 @@ exports.up = async function (knex) {
     table.uuid('id').primary()
     table.uuid('place_id').references('id').inTable('place').notNullable().onDelete('CASCADE')
     table.uuid('activity_id').references('id').inTable('activity').notNullable().onDelete('CASCADE')
-    table.json('details')
+    table.jsonb('details')
   })
 }
 

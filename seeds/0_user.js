@@ -5,6 +5,8 @@ exports.seed = async function (knex) {
   await knex('place_activity').del()
   await knex('activity').del()
   await knex('place').del()
+  await knex('user_scope').del()
+  await knex('scope').del()
   await knex('user').del()
 
   // Inserts seed entries
