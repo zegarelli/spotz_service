@@ -4,7 +4,7 @@ const guard = require('../common/guard')
 const activityService = require('../services/activityService')
 
 /* GET activities listing. */
-router.get('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
+router.get('/', async (req, res, next) => {
   const name = req.query.name || null
   const creator = req.query.creator || null
   const place = req.query.place || null
@@ -21,7 +21,7 @@ router.get('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
   }
 })
 
-router.post('/', async (req, res, next) => {
+router.post('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
   try {
     const result = await activityService.create(req.body)
     res.json(result)
@@ -30,7 +30,7 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', guard.checkAny(['admin:manage']), async (req, res, next) => {
   try {
     const result = await activityService.update(req.params.id, req.body)
     res.json(result)
