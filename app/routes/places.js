@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const guard = require('../common/guard')
 const placeService = require('../services/placeService')
 
 router.get('/', async (req, res, next) => {
@@ -13,7 +14,7 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-router.post('/', async (req, res, next) => {
+router.post('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
   try {
     const result = await placeService.create(req.body)
     res.json(result)
@@ -22,7 +23,7 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', guard.checkAny(['admin:manage']), async (req, res, next) => {
   try {
     const result = await placeService.update(req.params.id, req.body)
     res.json(result)
