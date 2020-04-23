@@ -8,6 +8,7 @@ var cors = require('cors')
 var usersRouter = require('./routes/users')
 var placesRouter = require('./routes/places')
 var activitiesRouter = require('./routes/activities')
+var scopesRouter = require('./routes/scopes')
 
 const { allowedOrigins } = require('./common/config')
 
@@ -36,6 +37,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/users', usersRouter)
 app.use('/places', placesRouter)
 app.use('/activities', activitiesRouter)
+app.use('/scopes', scopesRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
