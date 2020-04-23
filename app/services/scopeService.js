@@ -11,6 +11,10 @@ async function create (data) {
   return result
 }
 
+async function deleteById (id) {
+  return Scope.query().findById(id).delete()
+}
+
 async function get () {
   const query = await Scope.query().orderBy('name')
   return query
@@ -30,8 +34,9 @@ async function update (id, data) {
 }
 
 module.exports = {
-  get,
   create,
-  update,
-  getById
+  deleteById,
+  get,
+  getById,
+  update
 }

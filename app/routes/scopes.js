@@ -30,6 +30,15 @@ router.put('/:id', guard.checkAny(['admin:manage']), async (req, res, next) => {
   }
 })
 
+router.delete('/:id', guard.checkAny(['admin:manage']), async (req, res, next) => {
+  try {
+    const result = await scopeService.delete(req.params.id)
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+})
+
 router.get('/:id', async (req, res, next) => {
   try {
     res.json(await scopeService.getById(req.params.id))
