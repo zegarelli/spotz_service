@@ -6,9 +6,9 @@ const allowedOrigins = [
 const jwk = {
   alg: 'RS256',
   e: 'AQAB',
-  kid: process.env.AUTH_KID,
+  kid: process.env.AUTH_KID || '',
   kty: 'RSA',
-  n: process.env.AUTH_N,
+  n: process.env.AUTH_N || '',
   use: 'sig'
 }
 
