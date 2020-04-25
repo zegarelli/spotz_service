@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const userService = require('../services/userService')
 const User = require('../models/User')
+const { UnauthorizedError } = require('../common/errors')
 
 /* GET users listing. */
 router.get('/', async (req, res, next) => {
@@ -19,7 +20,7 @@ router.post('/verify', async (req, res, next) => {
       const user = await userService.ensureUser(req.body.id_token)
       res.json(user)
     } else {
-      throw new Error('id_token not found in cookies')
+      throw new UnauthorizedError('id_token not found in request body')
     }
   } catch (err) {
     next(err)

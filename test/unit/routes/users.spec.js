@@ -2,6 +2,8 @@
 const { stubRes, createDeferredNext } = require('../../support/testUtil')
 const users = require('../../../app/routes/users')
 const User = require('../../../app/models/User')
+const userService = require('../../../app/services/userService')
+const { UnauthorizedError } = require('../../../app/common/errors')
 
 require('../../support/node')
 
@@ -35,6 +37,45 @@ describe('users router', function () {
     it('passes on errors', async function () {
       const error = new Error('blah')
       placeQueryStub.throws(error)
+      users(req, res, nextSpy)
+      return nextSpy.then(() => {
+        expect(nextSpy).calledWith(error)
+      })
+    })
+  })
+  describe('/users/verify', function () {
+    let ensureUserStub
+    beforeEach(function () {
+      req = {
+        method: 'POST',
+        url: '/verify',
+        user: { scopes: [] },
+        body: { id_token: '12345' },
+        query: {}
+      }
+
+      expectedOutput = { id: '123abc' }
+      ensureUserStub = this.sinon.stub(userService, 'ensureUser')
+      ensureUserStub.resolves(expectedOutput)
+    })
+    it('ensures user and responds', async function () {
+      users(req, res, nextSpy)
+      return res.then(async function () {
+        expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
+        const ensureUserArgs = ensureUserStub.getCall(0).args
+        expect(ensureUserArgs[0]).to.equal(req.body.id_token)
+      })
+    })
+    it('requires an id_token in the body', async function () {
+      delete req.body.id_token
+      users(req, res, nextSpy)
+      return nextSpy.then(() => {
+        expect(nextSpy.getCall(0).args[0]).instanceOf(UnauthorizedError)
+      })
+    })
+    it('passes on errors', async function () {
+      const error = new Error('blah')
+      ensureUserStub.throws(error)
       users(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)
