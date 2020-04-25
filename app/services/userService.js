@@ -1,5 +1,5 @@
 const User = require('../models/User')
-const { decode } = require('../common/token')
+const token = require('../common/token')
 
 const uuid = require('uuid')
 
@@ -25,7 +25,7 @@ async function getUserScopes (email) {
 }
 
 async function ensureUser (idToken) {
-  const tokenData = await decode(idToken)
+  const tokenData = await token.decode(idToken)
   const email = tokenData.email
   const users = await User.query().where({ email })
 
@@ -43,6 +43,7 @@ async function ensureUser (idToken) {
 }
 
 module.exports = {
+  createUser,
   getUserScopes,
   ensureUser
 }
