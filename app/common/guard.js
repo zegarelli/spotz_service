@@ -1,11 +1,9 @@
 const { UnauthorizedError, PermissionError } = require('./errors')
-const { decode } = require('../common/token')
-const userService = require('../services/userService')
 
 const guard = (function () {
   let config = {
-    requestProperty: 'cookies',
-    permissionsProperty: 'id_token'
+    requestProperty: 'user',
+    permissionsProperty: 'scopes'
   }
   if (process.env.SECURITY_OFF && process.env.SECURITY_OFF.toLowerCase() === 'true' && (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test')) {
     config.securityOff = true
@@ -24,31 +22,19 @@ const guard = (function () {
       if (!options.requestProperty) {
         return next(new UnauthorizedError('Guard requestProperty hasn\'t been defined. Check your configuration.'))
       }
-      const cookies = req[options.requestProperty]
-      if (!cookies) {
-        return next(new UnauthorizedError(`cookies object ${options.requestProperty} was not found. Check your configuration.`))
+      const user = req[options.requestProperty]
+      if (!user) {
+        return next(new UnauthorizedError(`Cookies object ${options.requestProperty} was not found. Check your configuration.`))
       }
-      const idToken = cookies[options.permissionsProperty]
-      if (!idToken) {
-        return next(new UnauthorizedError('Could not find id_token in cookies. Bad configuration?'))
+      const permissions = user[options.permissionsProperty]
+      if (!permissions) {
+        return next(new UnauthorizedError(`Could not find ${options.permissionsProperty} in ${options.requestProperty}. Bad configuration?`))
       }
-      decode(idToken)
-        .then(decodedToken => {
-          if (!(decodedToken)) {
-            return next(new UnauthorizedError('Unable to decode JWT'))
-          }
-          userService.getUserScopes(decodedToken.email)
-            .then(permissions => {
-              const sufficient = sufficientCheck(requiredPermissions, permissions)
-              return next(!sufficient ? new PermissionError('insufficient permissions') : null)
-            })
-            .catch((err) => {
-              console.log('userService Error: ', err)
-            })
-        }).catch((err) => {
-          console.log(err)
-          return next(new UnauthorizedError('Unable to decode JWT'))
-        })
+      if (!Array.isArray(permissions)) {
+        return next(new UnauthorizedError('Permissions should be an Array. Bad format?'))
+      }
+      const sufficient = sufficientCheck(requiredPermissions, permissions)
+      return next(!sufficient ? new PermissionError('insufficient permissions') : null)
     }
   }
 

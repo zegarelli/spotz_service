@@ -61,6 +61,7 @@ describe('activities router', function () {
     let createStub
     beforeEach(function () {
       req.method = 'POST'
+      req.user.scopes = ['admin:manage']
       expectedOutput = { id: '123abc' }
       createStub = this.sinon.stub(activityService, 'create')
     })
@@ -90,6 +91,7 @@ describe('activities router', function () {
       req.method = 'put'
       req.url = `/${id}`
       req.body = { data: 'some data' }
+      req.user.scopes = ['admin:manage']
     })
     it('updates and responds', async function () {
       activities(req, res, nextSpy)

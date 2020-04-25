@@ -1,4 +1,4 @@
-const { UnauthorizedError, PermissionError } = require('./errors')
+const { UnauthorizedError, PermissionError, TokenError } = require('./errors')
 
 module.exports = function (error, req, res, next) {
   // errors thrown by guard.js
@@ -14,6 +14,13 @@ module.exports = function (error, req, res, next) {
       error: 'Unauthorized',
       error_description: process.env.NODE_ENV === 'development'
         ? 'No authorization token was found'
+        : null
+    })
+  } else if (error instanceof TokenError) {
+    return res.status(401).json({
+      error: 'Token Error',
+      error_description: process.env.NODE_ENV === 'development'
+        ? 'Issue with authorization token'
         : null
     })
   } else {

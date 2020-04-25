@@ -1,18 +1,20 @@
-var createError = require('http-errors')
-var express = require('express')
-var path = require('path')
-var cookieParser = require('cookie-parser')
-var logger = require('morgan')
-var cors = require('cors')
+const createError = require('http-errors')
+const express = require('express')
+const path = require('path')
+const cookieParser = require('cookie-parser')
+const logger = require('morgan')
+const cors = require('cors')
 
-var usersRouter = require('./routes/users')
-var placesRouter = require('./routes/places')
-var activitiesRouter = require('./routes/activities')
-var scopesRouter = require('./routes/scopes')
+const { userAuth } = require('./routes/authMiddle')
+
+const usersRouter = require('./routes/users')
+const placesRouter = require('./routes/places')
+const activitiesRouter = require('./routes/activities')
+const scopesRouter = require('./routes/scopes')
 
 const { allowedOrigins } = require('./common/config')
 
-var app = express()
+const app = express()
 
 app.use(cors({
   origin: function (origin, callback) { // allow requests with no origin
@@ -33,6 +35,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
+
+app.use(userAuth)
 
 app.use('/users', usersRouter)
 app.use('/places', placesRouter)
