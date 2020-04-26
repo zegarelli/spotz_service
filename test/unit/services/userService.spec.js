@@ -23,6 +23,22 @@ describe('userService', function () {
       returningStub.resolves({ email, username, verified })
       const results = await userService.createUser(email, username, verified)
       expect(results).to.deep.equal({ email, username, verified })
+
+      const insertArgs = insertStub.getCall(0).args[0]
+      delete insertArgs.id
+      expect(insertArgs).to.deep.equal({ email, username, verified })
+    })
+    it('requires boolean true to set verified to true', async function () {
+      const email = 'martin@spots.com'
+      const username = 'martin'
+      const verified = 'notbooleantrue'
+      returningStub.resolves({ email, username, verified })
+      const results = await userService.createUser(email, username, verified)
+      expect(results).to.deep.equal({ email, username, verified })
+
+      const insertArgs = insertStub.getCall(0).args[0]
+      delete insertArgs.id
+      expect(insertArgs).to.deep.equal({ email, username, verified: false })
     })
   })
   describe('getUserScopes', function () {
@@ -63,15 +79,28 @@ describe('userService', function () {
     })
   })
   describe('ensureUser', function () {
-    let whereStub, user
+    let whereStub, user, tokenData, returningStub
     beforeEach(function () {
       user = {
-        email: 'martin@spotz.com'
+        email: 'martin@spotz.com',
+        username: 'martin',
+        verified: true
+      }
+
+      tokenData = {
+        'cognito:username': user.username,
+        email: user.email,
+        email_verified: true
       }
       whereStub = this.sinon.stub()
-      this.sinon.stub(User, 'query').returns({ where: whereStub })
+      const insertStub = this.sinon.stub()
+      returningStub = this.sinon.stub()
+      const querystub = this.sinon.stub(User, 'query')
+      querystub.onFirstCall().returns({ where: whereStub })
+      querystub.onSecondCall().returns({ insert: insertStub })
+      insertStub.returns({ returning: returningStub })
 
-      this.sinon.stub(token, 'decode').resolves({ email: user.email })
+      this.sinon.stub(token, 'decode').resolves(tokenData)
     })
     it('returns a user when one exists', async function () {
       whereStub.resolves([user])
@@ -79,6 +108,55 @@ describe('userService', function () {
       expect(results).to.deep.equal(user)
 
       expect(whereStub.getCall(0).args[0]).to.deep.equal({ email: user.email })
+      expect(returningStub.notCalled).to.equal(true)
+    })
+    it('creates a user when none exists', async function () {
+      whereStub.resolves([])
+      returningStub.resolves(user)
+      const results = await userService.ensureUser(user.email)
+      expect(results).to.deep.equal(user)
+
+      expect(whereStub.getCall(0).args[0]).to.deep.equal({ email: user.email })
+      expect(returningStub.calledOnce).to.equal(true)
+    })
+    it('throws an error when tokenData doesn\'t have email', async function () {
+      delete tokenData.email
+      whereStub.resolves([])
+      returningStub.resolves(user)
+      try {
+        await userService.ensureUser(user.email)
+      } catch (err) {
+        expect(err).to.match(/Error: username or email not found in tokenData/)
+      }
+    })
+    it('throws an error when tokenData doesn\'t have username', async function () {
+      delete tokenData.username
+      whereStub.resolves([])
+      returningStub.resolves(user)
+      try {
+        await userService.ensureUser(user.email)
+      } catch (err) {
+        expect(err).to.match(/Error: username or email not found in tokenData/)
+      }
+    })
+    it('throws an error when tokenData doesn\'t have username', async function () {
+      delete tokenData.username
+      whereStub.resolves([])
+      returningStub.resolves(user)
+      try {
+        await userService.ensureUser(user.email)
+      } catch (err) {
+        expect(err).to.match(/Error: username or email not found in tokenData/)
+      }
+    })
+    it('throws an error when multiple users are found', async function () {
+      whereStub.resolves([user, user])
+      try {
+        await userService.ensureUser(user.email)
+      } catch (err) {
+        expect(err).to.match(/Error: multiple Users with the same email: /)
+        expect(err.message).to.include(user.email)
+      }
     })
   })
 })

@@ -8,7 +8,7 @@ async function createUser (email, username, verified) {
     id: uuid.v4(),
     email,
     username,
-    verified
+    verified: verified === true ? verified : false
   }).returning('*')
   return user
 }
@@ -36,9 +36,11 @@ async function ensureUser (idToken) {
     if (username && email) {
       const user = await createUser(email, username, verified)
       return user
+    } else {
+      throw new Error(`username or email not found in tokenData: ${JSON.stringify(tokenData, null, 2)}`)
     }
   } else {
-    throw new Error(`Multiple Users with the same email: ${email} found`)
+    throw new Error(`multiple Users with the same email: ${email} found`)
   }
 }
 
