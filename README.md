@@ -28,7 +28,7 @@ postgres=# \du
 ```
 If you don't see your user. (In this case the user "martin" is me, so I'm good) run the following:
 ```
-create user <your computer name> with encrypted password <some password>;
+create user <your computer name> with encrypted password '<some password>';
 ```
 run `"\du"` again to verify you see something similar to above.
 

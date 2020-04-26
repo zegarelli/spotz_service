@@ -49,6 +49,7 @@ describe('places router', function () {
       createStub = this.sinon.stub(placeService, 'create')
       createStub.resolves(expectedOutput)
       req.method = 'POST'
+      req.user.scopes = ['admin:manage']
     })
     it('creates and responds', async function () {
       places(req, res, nextSpy)
@@ -75,6 +76,7 @@ describe('places router', function () {
       req.method = 'put'
       req.url = `/${id}`
       req.body = { data: 'some data' }
+      req.user.scopes = ['admin:manage']
     })
     it('updates and responds', async function () {
       places(req, res, nextSpy)
