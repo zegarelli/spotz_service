@@ -13,6 +13,11 @@ async function createUser (email, username, verified) {
   return user
 }
 
+async function getUsers () {
+  const users = await User.query().withGraphFetched('[scopes]')
+  return users
+}
+
 async function getUserScopes (email) {
   const users = await User.query()
     .withGraphFetched('[scopes]')
@@ -46,6 +51,7 @@ async function ensureUser (idToken) {
 
 module.exports = {
   createUser,
+  getUsers,
   getUserScopes,
   ensureUser
 }

@@ -7,7 +7,8 @@ const { UnauthorizedError } = require('../common/errors')
 /* GET users listing. */
 router.get('/', async (req, res, next) => {
   try {
-    res.json(await User.query())
+    const users = await userService.getUsers()
+    res.json(users)
   } catch (err) {
     next(err)
   }
