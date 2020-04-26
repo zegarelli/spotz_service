@@ -41,6 +41,20 @@ describe('userService', function () {
       expect(insertArgs).to.deep.equal({ email, username, verified: false })
     })
   })
+  describe('getUsers', function () {
+    let withGraphFetchedStub, expected
+    beforeEach(function () {
+      withGraphFetchedStub = this.sinon.stub()
+      this.sinon.stub(User, 'query').returns({ withGraphFetched: withGraphFetchedStub })
+
+      expected = ['some', 'list', 'of', 'users']
+      withGraphFetchedStub.resolves(expected)
+    })
+    it('gets users', async function () {
+      const result = await userService.getUsers()
+      expect(result).to.deep.equal(expected)
+    })
+  })
   describe('getUserScopes', function () {
     let whereStub, user
     beforeEach(function () {

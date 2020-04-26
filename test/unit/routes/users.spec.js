@@ -22,11 +22,11 @@ describe('users router', function () {
     nextSpy = this.sinon.spy(createDeferredNext())
   })
   describe('/users', function () {
-    let placeQueryStub
+    let getUsersStub
     beforeEach(function () {
       expectedOutput = { id: '123abc' }
-      placeQueryStub = this.sinon.stub(User, 'query')
-      placeQueryStub.resolves(expectedOutput)
+      getUsersStub = this.sinon.stub(userService, 'getUsers')
+      getUsersStub.resolves(expectedOutput)
     })
     it('searches and responds', async function () {
       users(req, res, nextSpy)
@@ -36,7 +36,7 @@ describe('users router', function () {
     })
     it('passes on errors', async function () {
       const error = new Error('blah')
-      placeQueryStub.throws(error)
+      getUsersStub.throws(error)
       users(req, res, nextSpy)
       return nextSpy.then(() => {
         expect(nextSpy).calledWith(error)
