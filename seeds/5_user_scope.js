@@ -20,6 +20,11 @@ exports.seed = async function (knex) {
     },
     {
       id: uuid.v4(),
+      user_id: martin[0].id,
+      scope_id: scopes[1].id
+    },
+    {
+      id: uuid.v4(),
       user_id: users[1].id,
       scope_id: scopes[1].id
     }])
