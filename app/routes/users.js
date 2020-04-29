@@ -52,4 +52,22 @@ router.get('/:id/activities', async (req, res, next) => {
   }
 })
 
+router.post('/:id/scope', async (req, res, next) => {
+  try {
+    const result = await userService.addScope(req.params.id, req.body)
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.delete('/:id/scope', async (req, res, next) => {
+  try {
+    const result = await userService.removeScope(req.params.id, req.body)
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+})
+
 module.exports = router

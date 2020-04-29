@@ -1,4 +1,5 @@
 const User = require('../models/User')
+const UserScope = require('../models/UserScope')
 const token = require('../common/token')
 
 const uuid = require('uuid')
@@ -49,9 +50,34 @@ async function ensureUser (idToken) {
   }
 }
 
+async function addScope (id, data) {
+  if (!data.scopeId) {
+    throw new Error('No scopeId included in body')
+  }
+  const result = UserScope.query().insert({
+    id: uuid.v4(),
+    user_id: id,
+    scope_id: data.scopeId
+  })
+  return result
+}
+
+async function removeScope (id, data) {
+  if (!data.scopeId) {
+    throw new Error('No scopeId included in body')
+  }
+  const result = UserScope.query().where({
+    user_id: id,
+    scope_id: data.scopeId
+  }).delete()
+  return result
+}
+
 module.exports = {
   createUser,
   getUsers,
   getUserScopes,
-  ensureUser
+  ensureUser,
+  addScope,
+  removeScope
 }
