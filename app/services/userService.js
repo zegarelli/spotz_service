@@ -19,7 +19,7 @@ async function getUsers () {
   return users
 }
 
-async function getUserScopes (email) {
+async function getUserIdAndScopes (email) {
   const users = await User.query()
     .withGraphFetched('[scopes]')
     .where({ email })
@@ -27,7 +27,7 @@ async function getUserScopes (email) {
     throw new Error(`Multiple Users with the same email: ${email} found`)
   }
   const scopes = users[0].scopes.map(scope => scope.name)
-  return scopes
+  return { id: users[0].id, scopes }
 }
 
 async function ensureUser (idToken) {
@@ -76,7 +76,7 @@ async function removeScope (id, data) {
 module.exports = {
   createUser,
   getUsers,
-  getUserScopes,
+  getUserIdAndScopes,
   ensureUser,
   addScope,
   removeScope

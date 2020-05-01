@@ -12,9 +12,9 @@ const userAuth = function (req, res, next) {
         console.log('Unable to decode JWT')
         return next()
       }
-      userService.getUserScopes(decodedToken.email)
-        .then(scopes => {
-          req.user = { scopes }
+      userService.getUserIdAndScopes(decodedToken.email)
+        .then(idAndScopes => {
+          req.user = { id: idAndScopes.id, scopes: idAndScopes.scopes }
           return next()
         })
         .catch((err) => {

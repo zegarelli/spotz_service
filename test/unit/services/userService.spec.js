@@ -3,6 +3,7 @@
 const userService = require('../../../app/services/userService')
 const User = require('../../../app/models/User')
 const token = require('../../../app/common/token')
+const uuid = require('uuid')
 
 require('../../support/node')
 
@@ -64,6 +65,7 @@ describe('userService', function () {
       withGraphFetchedStub.returns({ where: whereStub })
 
       user = {
+        id: uuid.v4(),
         email: 'martin@spotz.com',
         scopes: [
           {
@@ -78,15 +80,16 @@ describe('userService', function () {
     })
     it('returns a users scopes', async function () {
       whereStub.resolves([user])
-      const results = await userService.getUserScopes(user.email)
-      expect(results).to.deep.equal([user.scopes[0].name, user.scopes[1].name])
+      const results = await userService.getUserIdAndScopes(user.email)
+      expect(results.id).to.deep.equal(user.id)
+      expect(results.scopes).to.deep.equal([user.scopes[0].name, user.scopes[1].name])
 
       expect(whereStub.getCall(0).args[0]).to.deep.equal({ email: user.email })
     })
     it('throws when multiple users are found', async function () {
       whereStub.resolves([user, user])
       try {
-        await userService.getUserScopes(user.email)
+        await userService.getUserIdAndScopes(user.email)
       } catch (err) {
         expect(err.message).to.equal(`Multiple Users with the same email: ${user.email} found`)
       }
