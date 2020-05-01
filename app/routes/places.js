@@ -16,7 +16,7 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
   try {
-    const result = await placeService.create(req.body)
+    const result = await placeService.create(req.body, req.user.id)
     res.json(result)
   } catch (err) {
     next(err)
@@ -25,7 +25,7 @@ router.post('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
 
 router.put('/:id', guard.checkAny(['admin:manage']), async (req, res, next) => {
   try {
-    const result = await placeService.update(req.params.id, req.body)
+    const result = await placeService.update(req.params.id, req.body, req.user.id)
     res.json(result)
   } catch (err) {
     next(err)

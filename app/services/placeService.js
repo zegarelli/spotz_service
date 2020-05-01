@@ -27,10 +27,11 @@ async function search (name, creator) {
   return query
 }
 
-async function create (data) {
+async function create (data, userId) {
   const result = await Place.query().insert({
     id: uuid.v4(),
     name: data.name,
+    created_by: userId,
     extended_data: { description: data.description }
   }).returning('*')
 
@@ -42,9 +43,10 @@ async function create (data) {
   return result
 }
 
-async function update (id, data) {
+async function update (id, data, userId) {
   const result = await Place.query().patchAndFetchById(id, {
     name: data.name,
+    updated_by: userId,
     'extended_data:description': data.description
   })
 

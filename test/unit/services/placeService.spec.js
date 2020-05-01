@@ -7,9 +7,11 @@ const placeActivityService = require('../../../app/services/placeActivityService
 const uuid = require('uuid')
 
 describe('placeService', function () {
+  let userId
   describe('search', function () {
     let whereStub, withGraphFetchedStub, modifiersStub
     beforeEach(function () {
+      userId = uuid.v4()
       whereStub = this.sinon.stub()
       modifiersStub = this.sinon.stub()
       withGraphFetchedStub = this.sinon.stub()
@@ -77,14 +79,15 @@ describe('placeService', function () {
         .resolves(activities)
     })
     it('Creates a new Place & PlaceActivities', async function () {
-      const result = await placeService.create(data)
+      const result = await placeService.create(data, userId)
       expect(result).to.deep.equal({ ...placeExpectedResult, activities })
 
       const insertData = insertStub.getCall(0).args[0]
       delete insertData.id
       expect(insertData).to.deep.equal({
         name: data.name,
-        extended_data: { description: data.description }
+        extended_data: { description: data.description },
+        created_by: userId
       })
 
       const createMultipleArgs = createMultipleStub.getCall(0).args[0]
@@ -142,11 +145,19 @@ describe('placeService', function () {
         .resolves(deletedPlaceActivities)
     })
     it('Updates the specified place, and handles activities properly', async function () {
-      const result = await placeService.update(id, data)
+      const result = await placeService.update(id, data, userId)
       expect(result).to.deep.equal({
         ...patchExpectedResult,
         createdPlaceActivities,
         deletedPlaceActivities
+      })
+
+      const patchAndFetchByIdArgs = patchAndFetchByIdSub.getCall(0).args
+      expect(patchAndFetchByIdArgs[0]).to.equal(id)
+      expect(patchAndFetchByIdArgs[1]).to.deep.equal({
+        name: data.name,
+        updated_by: userId,
+        'extended_data:description': data.description
       })
 
       const createMultipleArgs = createMultipleStub.getCall(0).args[0]

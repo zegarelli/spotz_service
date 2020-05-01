@@ -13,7 +13,7 @@ describe('places router', function () {
     req = {
       method: 'GET',
       url: '/',
-      user: { scopes: [] },
+      user: { scopes: [], id: uuid.v4() },
       body: {},
       query: {}
     }
@@ -84,7 +84,7 @@ describe('places router', function () {
         expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
 
         const updateArgs = updateStub.getCall(0).args
-        expect(updateArgs).to.deep.equal([id, req.body])
+        expect(updateArgs).to.deep.equal([id, req.body, req.user.id])
       })
     })
     it('passes on errors', async function () {
