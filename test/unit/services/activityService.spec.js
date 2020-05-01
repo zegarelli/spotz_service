@@ -7,6 +7,7 @@ const placeActivityService = require('../../../app/services/placeActivityService
 const uuid = require('uuid')
 
 describe('activityService', function () {
+  const userId = uuid.v4()
   describe('search', function () {
     let whereStub, withGraphFetchedStub, modifiersStub
     beforeEach(function () {
@@ -85,14 +86,15 @@ describe('activityService', function () {
       createMultipleStub = this.sinon.stub(placeActivityService, 'createMultiple')
         .resolves(createMultipleResult)
     })
-    it('Creates a new Place & PlaceActivities', async function () {
-      const result = await activityService.create(data)
+    it('Creates a new Activity & PlaceActivities', async function () {
+      const result = await activityService.create(data, userId)
       expect(result).to.deep.equal({ ...activityExpectedResult, places: createMultipleResult })
 
       const insertData = insertStub.getCall(0).args[0]
       delete insertData.id
       expect(insertData).to.deep.equal({
         name: data.name,
+        created_by: userId,
         extended_data: { description: data.description }
       })
 
@@ -151,11 +153,19 @@ describe('activityService', function () {
         .resolves(deletedPlaceActivities)
     })
     it('Updates the specified place, and handles activities properly', async function () {
-      const result = await activityService.update(id, data)
+      const result = await activityService.update(id, data, userId)
       expect(result).to.deep.equal({
         ...patchExpectedResult,
         createdPlaceActivities,
         deletedPlaceActivities
+      })
+
+      const patchAndFetchByIdArgs = patchAndFetchByIdSub.getCall(0).args
+      expect(patchAndFetchByIdArgs[0]).to.equal(id)
+      expect(patchAndFetchByIdArgs[1]).to.deep.equal({
+        name: data.name,
+        updated_by: userId,
+        'extended_data:description': data.description
       })
 
       const createMultipleArgs = createMultipleStub.getCall(0).args[0]

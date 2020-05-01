@@ -23,7 +23,7 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
   try {
-    const result = await activityService.create(req.body)
+    const result = await activityService.create(req.body, req.user.id)
     res.json(result)
   } catch (err) {
     next(err)
@@ -32,7 +32,7 @@ router.post('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
 
 router.put('/:id', guard.checkAny(['admin:manage']), async (req, res, next) => {
   try {
-    const result = await activityService.update(req.params.id, req.body)
+    const result = await activityService.update(req.params.id, req.body, req.user.id)
     res.json(result)
   } catch (err) {
     next(err)

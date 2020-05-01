@@ -13,7 +13,7 @@ describe('activities router', function () {
     req = {
       method: 'GET',
       url: '/',
-      user: { scopes: [] },
+      user: { scopes: [], id: uuid.v4() },
       body: {},
       query: {}
     }
@@ -68,8 +68,13 @@ describe('activities router', function () {
     it('searches and responds', async function () {
       createStub.resolves(expectedOutput)
       activities(req, res, nextSpy)
+
       return res.then(async function () {
         expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
+
+        const createArgs = createStub.getCall(0).args
+        expect(createArgs[0]).to.deep.equal(req.body)
+        expect(createArgs[1]).to.equal(req.user.id)
       })
     })
     it('passes on errors', async function () {
@@ -99,7 +104,7 @@ describe('activities router', function () {
         expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
 
         const updateArgs = updateStub.getCall(0).args
-        expect(updateArgs).to.deep.equal([id, req.body])
+        expect(updateArgs).to.deep.equal([id, req.body, req.user.id])
       })
     })
     it('passes on errors', async function () {
