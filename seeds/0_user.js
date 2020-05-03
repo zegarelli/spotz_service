@@ -2,6 +2,7 @@ const uuid = require('uuid')
 
 exports.seed = async function (knex) {
   // Deletes ALL existing entries in all tables
+  await knex('comment').del()
   await knex('place_activity').del()
   await knex('activity').del()
   await knex('place').del()

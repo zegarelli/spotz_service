@@ -10,7 +10,6 @@ exports.seed = async function (knex) {
   const admin = await knex.from('scope').select('id').where({ name: 'admin:manage' })
   const scopes = await knex.from('scope').select('id')
 
-  console.log(martin)
   // Inserts seed entries
   await knex('user_scope').insert([
     {
