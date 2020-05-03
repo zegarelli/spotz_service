@@ -6,8 +6,8 @@ function buildTree (comments) {
     comments[index].children = []
   }
   for (const node of comments) {
-    if (node.parentComment) {
-      comments[map[node.parentComment]].children.push(node)
+    if (node.parent_id) {
+      comments[map[node.parent_id]].children.push(node)
     } else {
       topLevelComments.push(node)
     }

@@ -11,6 +11,7 @@ const usersRouter = require('./routes/users')
 const placesRouter = require('./routes/places')
 const activitiesRouter = require('./routes/activities')
 const scopesRouter = require('./routes/scopes')
+const commentsRouter = require('./routes/comments')
 
 const { allowedOrigins } = require('./common/config')
 
@@ -42,6 +43,7 @@ app.use('/users', usersRouter)
 app.use('/places', placesRouter)
 app.use('/activities', activitiesRouter)
 app.use('/scopes', scopesRouter)
+app.use('/comments', commentsRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -7,6 +7,7 @@ exports.seed = async function (knex) {
   // finds users to call creator and updater
   const bazookas = await knex.from('place').select('id').where({ name: 'Bazookas' })
   const users = await knex.from('user').select('id')
+  const places = await knex.from('place').select('id')
 
   // Inserts seed entries
   await knex('comment').insert([
@@ -24,9 +25,15 @@ exports.seed = async function (knex) {
     },
     {
       id: uuid.v4(),
-      object_id: users[1].id,
+      object_id: bazookas[0].id,
       created_by: users[2].id,
       text: 'No chance, not even once'
+    },
+    {
+      id: uuid.v4(),
+      object_id: places[0].id,
+      created_by: users[2].id,
+      text: 'No chance, not even once other object'
     }])
 
   const parentComment = await knex.from('comment').select('id').where({ text: 'This is brilliant' })
