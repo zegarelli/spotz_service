@@ -3,6 +3,7 @@ const connection = require('../../knexfile')
 const { Model } = require('objection')
 const Place = require('./Place')
 const Activity = require('./Activity')
+const Comment = require('./Comment')
 
 const knexConnection = Knex(connection)
 
@@ -27,6 +28,14 @@ class User extends Model {
       activities: {
         relation: Model.HasManyRelation,
         modelClass: Activity,
+        join: {
+          from: 'user.id',
+          to: 'activity.created_by'
+        }
+      },
+      comments: {
+        relation: Model.HasManyRelation,
+        modelClass: Comment,
         join: {
           from: 'user.id',
           to: 'activity.created_by'
