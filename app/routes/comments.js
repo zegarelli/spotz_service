@@ -15,7 +15,7 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
   try {
-    const result = await commentService.create(req.body)
+    const result = await commentService.create(req.body, req.user.id)
     res.json(result)
   } catch (err) {
     next(err)

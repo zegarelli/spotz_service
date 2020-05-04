@@ -2,11 +2,13 @@ const Comment = require('../models/Comment')
 const uuid = require('uuid')
 const commentTree = require('../common/commentTree')
 
-async function create (data) {
+async function create (data, userId) {
   const result = await Comment.query().insert({
     id: uuid.v4(),
-    name: data.name,
-    description: data.description
+    object_id: data.objectId,
+    parent_id: data.parentId,
+    text: data.text,
+    created_by: userId
   }).returning('*')
 
   return result
