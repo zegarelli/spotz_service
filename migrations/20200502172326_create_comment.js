@@ -4,7 +4,7 @@ exports.up = async function (knex) {
     table.uuid('id').primary()
     table.uuid('created_by').references('user.id')
     table.uuid('object_id')
-    table.uuid('object_id')
+    table.uuid('parent_id')
     table.timestamp('created_at').defaultTo(knex.fn.now())
     table.timestamp('updated_at').defaultTo(knex.fn.now())
     table.string('text')
