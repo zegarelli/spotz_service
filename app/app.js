@@ -13,16 +13,17 @@ const activitiesRouter = require('./routes/activities')
 const scopesRouter = require('./routes/scopes')
 const commentsRouter = require('./routes/comments')
 
-const { allowedOrigins } = require('./common/config')
+const config = require('./common/config')
 
 const app = express()
+app.set('view engine', 'ejs')
 
 app.use(cors({
   origin: function (origin, callback) { // allow requests with no origin
     // (like mobile apps or curl requests)
     if (!origin) return callback(null, true)
 
-    if (allowedOrigins.indexOf(origin) === -1) {
+    if (config.allowedOrigins.indexOf(origin) === -1) {
       const msg = 'The CORS policy for this site does not ' +
                 'allow access from the specified Origin.'
       return callback(new Error(msg), false)
@@ -38,6 +39,10 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(userAuth)
+
+app.get('/', (req, res) => {
+  res.render('index', config.siteConfig)
+})
 
 app.use('/users', usersRouter)
 app.use('/places', placesRouter)
