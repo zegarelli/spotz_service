@@ -36,11 +36,11 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(userAuth)
 
-app.get('/', (req, res) => {
+app.use('/api', router)
+
+app.get('*', (req, res) => {
   res.render('index', config.siteConfig)
 })
-
-app.use('/api', router)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
