@@ -12,7 +12,7 @@ exports.seed = async function (knex) {
 
   // Inserts seed entries
   return knex('user').insert([
-    { id: uuid.v4(), firstName: 'martin', lastName: 'zegarelli', email: 'prepxc@gmail.com', username: 'martin', verified: true },
+    { id: uuid.v4(), firstName: 'martin', lastName: 'zegarelli2', email: 'prepxc@gmail.com', username: 'martin', verified: true },
     { id: uuid.v4(), firstName: 'peter', lastName: 'dirks', email: 'pete@gmail.com' },
     { id: uuid.v4(), firstName: 'jackson', lastName: 'braatz', email: 'jackson@gmail.com' }
   ])
