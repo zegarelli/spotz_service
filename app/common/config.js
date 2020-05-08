@@ -9,7 +9,7 @@ const siteConfig = {
 const allowedOrigins = [
   'http://localhost:9000',
   'http://localhost:3000',
-  'http://spotz.world'
+  'https://spotz.world'
 ]
 
 const jwk = {
