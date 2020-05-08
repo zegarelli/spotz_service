@@ -9,34 +9,34 @@ describe('commentTree', function () {
     raw = [
       {
         id: 1,
-        parentComment: false
+        parent_id: false
       },
       {
         id: 2,
-        parentComment: 1
+        parent_id: 1
       },
       {
         id: 3,
-        parentComment: false
+        parent_id: false
       },
       {
         id: 4,
-        parentComment: 2
+        parent_id: 2
       }
     ]
 
     expected = [
       {
         id: 1,
-        parentComment: false,
+        parent_id: false,
         children: [
           {
             id: 2,
-            parentComment: 1,
+            parent_id: 1,
             children: [
               {
                 id: 4,
-                parentComment: 2,
+                parent_id: 2,
                 children: []
               }
             ]
@@ -45,7 +45,7 @@ describe('commentTree', function () {
       },
       {
         id: 3,
-        parentComment: false,
+        parent_id: false,
         children: []
       }
     ]
