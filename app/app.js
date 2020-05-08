@@ -7,11 +7,7 @@ const cors = require('cors')
 
 const { userAuth } = require('./routes/authMiddle')
 
-const usersRouter = require('./routes/users')
-const placesRouter = require('./routes/places')
-const activitiesRouter = require('./routes/activities')
-const scopesRouter = require('./routes/scopes')
-const commentsRouter = require('./routes/comments')
+const router = require('./routes')
 
 const config = require('./common/config')
 
@@ -44,11 +40,7 @@ app.get('/', (req, res) => {
   res.render('index', config.siteConfig)
 })
 
-app.use('/users', usersRouter)
-app.use('/places', placesRouter)
-app.use('/activities', activitiesRouter)
-app.use('/scopes', scopesRouter)
-app.use('/comments', commentsRouter)
+app.use('/api', router)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
