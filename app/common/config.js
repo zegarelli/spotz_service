@@ -1,9 +1,9 @@
 const siteConfig = {
-  jsMain: 'https://spotzstatic.s3.us-east-2.amazonaws.com/main.7562726f.chunk.js',
-  jsMain2: 'https://spotzstatic.s3.us-east-2.amazonaws.com/2.b34bd16c.chunk.js',
-  jsMain3: 'https://spotzstatic.s3.us-east-2.amazonaws.com/runtime-main.35eb2b37.js',
+  jsMain: `https://spotzstatic.s3.us-east-2.amazonaws.com/builds/${process.env.SPOTZ_VERSION}/main-chunk.js`,
+  jsMain2: `https://spotzstatic.s3.us-east-2.amazonaws.com/builds/${process.env.SPOTZ_VERSION}/build-chunk.js`,
+  jsMain3: `https://spotzstatic.s3.us-east-2.amazonaws.com/builds/${process.env.SPOTZ_VERSION}/runtime-main.js`,
   styleSheet: '//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css',
-  title: 'Spotz2'
+  title: 'Spotz'
 }
 
 const allowedOrigins = [
