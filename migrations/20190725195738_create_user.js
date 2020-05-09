@@ -9,7 +9,7 @@ exports.up = async function (knex) {
     table.boolean('verified')
     table.timestamp('created_at').defaultTo(knex.fn.now())
     table.timestamp('updated_at').defaultTo(knex.fn.now())
-    table.json('extended_data')
+    table.jsonb('extended_data')
   })
 }
 

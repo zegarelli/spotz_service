@@ -23,7 +23,7 @@ async function get (objectId) {
   if (objectId) {
     where.object_id = objectId
   }
-  const query = await Comment.query().where(where).orderBy('created_at')
+  const query = await Comment.query().withGraphFetched('[user]').where(where).orderBy('created_at')
   const threaded = commentTree(query)
   return threaded
 }
