@@ -11,8 +11,7 @@
     "seed-test": "export DB_NAME=spotz_test && knex seed:run",
     "setup-db": "npm run migrate && npm run seed",
     "setup-test-db": "npm run migrate-test && npm run seed-test",
-    "test": "export NODE_ENV=test && nyc node_modules/mocha/bin/_mocha --exit",
-    "test-watch": "export DB_NAME=spotz_test && jest --watch --collectCoverage"
+    "test": "export NODE_ENV=test && nyc node_modules/mocha/bin/_mocha --exit"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
