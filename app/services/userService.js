@@ -56,7 +56,7 @@ async function ensureUser (idToken) {
 }
 
 async function giveBaseScopes (userId) {
-  const scopes = scopeService.getBaseScopes()
+  const scopes = await scopeService.getBaseScopes()
   for (const scope of scopes) {
     UserScope.query().insert({
       id: uuid.v4(),
