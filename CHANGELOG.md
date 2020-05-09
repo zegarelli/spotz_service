@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ## [0.2.0] 2020-05-08
 ### Added
 - Return eager query user when grabbing comments
+### Changed
+- user.extended_data column from json to jsonb
 
 ## [0.1.0] 2020-05-08
 ### Added
