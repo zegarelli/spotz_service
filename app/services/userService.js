@@ -1,6 +1,7 @@
 const User = require('../models/User')
 const UserScope = require('../models/UserScope')
 const token = require('../common/token')
+const scopeService = require('./scopeService')
 
 const uuid = require('uuid')
 
@@ -41,12 +42,27 @@ async function ensureUser (idToken) {
     const { 'cognito:username': username, email_verified: verified } = tokenData
     if (username && email) {
       const user = await createUser(email, username, verified)
+
+      // I don't really see a reason to await this
+      giveBaseScopes(user.id)
+
       return user
     } else {
       throw new Error(`username or email not found in tokenData: ${JSON.stringify(tokenData, null, 2)}`)
     }
   } else {
     throw new Error(`multiple Users with the same email: ${email} found`)
+  }
+}
+
+async function giveBaseScopes (userId) {
+  const scopes = scopeService.getBaseScopes()
+  for (const scope of scopes) {
+    UserScope.query().insert({
+      id: uuid.v4(),
+      user_id: userId,
+      scope_id: scope.id
+    })
   }
 }
 
