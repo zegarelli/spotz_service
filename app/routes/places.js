@@ -14,7 +14,7 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-router.post('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
+router.post('/', guard.checkAny(['objects:create']), async (req, res, next) => {
   try {
     const result = await placeService.create(req.body, req.user.id)
     res.json(result)
@@ -23,7 +23,7 @@ router.post('/', guard.checkAny(['admin:manage']), async (req, res, next) => {
   }
 })
 
-router.put('/:id', guard.checkAny(['admin:manage']), async (req, res, next) => {
+router.put('/:id', guard.checkAny(['objects:edit']), async (req, res, next) => {
   try {
     const result = await placeService.update(req.params.id, req.body, req.user.id)
     res.json(result)

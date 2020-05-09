@@ -24,6 +24,11 @@ async function getById (id) {
   return Scope.query().findById(id)
 }
 
+async function getBaseScopes () {
+  const result = await Scope.query().select('id').whereIn('name', ['objects:edit', 'objects:create'])
+  return result
+}
+
 async function update (id, data) {
   const result = await Scope.query().patchAndFetchById(id, {
     name: data.name,
@@ -38,5 +43,6 @@ module.exports = {
   deleteById,
   get,
   getById,
-  update
+  update,
+  getBaseScopes
 }

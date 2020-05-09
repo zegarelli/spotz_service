@@ -8,13 +8,18 @@ exports.seed = async function (knex) {
   await knex('scope').insert([
     {
       id: uuid.v4(),
-      name: 'activities:view',
-      description: 'allows a user to view activities'
+      name: 'objects:view',
+      description: 'allows a user to view'
     },
     {
       id: uuid.v4(),
-      name: 'activities:edit',
-      description: 'allows a user to edit activities'
+      name: 'objects:edit',
+      description: 'allows a user to edit'
+    },
+    {
+      id: uuid.v4(),
+      name: 'objects:create',
+      description: 'allows a user to create'
     },
     {
       id: uuid.v4(),

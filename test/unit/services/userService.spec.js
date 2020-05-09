@@ -2,6 +2,7 @@
 
 const userService = require('../../../app/services/userService')
 const User = require('../../../app/models/User')
+const scopeService = require('../../../app/services/scopeService')
 const token = require('../../../app/common/token')
 const uuid = require('uuid')
 
@@ -118,6 +119,7 @@ describe('userService', function () {
       insertStub.returns({ returning: returningStub })
 
       this.sinon.stub(token, 'decode').resolves(tokenData)
+      this.sinon.stub(scopeService, 'getBaseScopes').resolves([])
     })
     it('returns a user when one exists', async function () {
       whereStub.resolves([user])
