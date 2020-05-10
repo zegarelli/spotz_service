@@ -175,4 +175,62 @@ describe('users router', function () {
       })
     })
   })
+  describe('POST /users/:id/scope', function () {
+    let addScopeStub, userId
+    beforeEach(function () {
+      userId = '123abc'
+      req.url = `/${userId}/scope`
+      req.method = 'POST'
+      req.body = { scopeId: '12345' }
+      expectedOutput = { id: userId }
+      addScopeStub = this.sinon.stub(userService, 'addScope')
+    })
+    it('searches and responds', async function () {
+      addScopeStub.resolves(expectedOutput)
+      users(req, res, nextSpy)
+      return res.then(async function () {
+        expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
+        const addScopeArgs = addScopeStub.getCall(0).args
+        expect(addScopeArgs[0]).to.equal(userId)
+        expect(addScopeArgs[1]).to.deep.equal(req.body)
+      })
+    })
+    it('passes on errors', async function () {
+      const error = new Error('blah')
+      addScopeStub.throws(error)
+      users(req, res, nextSpy)
+      return nextSpy.then(() => {
+        expect(nextSpy).calledWith(error)
+      })
+    })
+  })
+  describe('DELETE /users/:id/scope', function () {
+    let removeScopeStub, userId
+    beforeEach(function () {
+      userId = '123abc'
+      req.url = `/${userId}/scope`
+      req.method = 'DELETE'
+      req.body = { scopeId: '12345' }
+      expectedOutput = { id: userId }
+      removeScopeStub = this.sinon.stub(userService, 'removeScope')
+    })
+    it('searches and responds', async function () {
+      removeScopeStub.resolves(expectedOutput)
+      users(req, res, nextSpy)
+      return res.then(async function () {
+        expect(JSON.parse(res.text)).to.deep.equal(expectedOutput)
+        const addScopeArgs = removeScopeStub.getCall(0).args
+        expect(addScopeArgs[0]).to.equal(userId)
+        expect(addScopeArgs[1]).to.deep.equal(req.body)
+      })
+    })
+    it('passes on errors', async function () {
+      const error = new Error('blah')
+      removeScopeStub.throws(error)
+      users(req, res, nextSpy)
+      return nextSpy.then(() => {
+        expect(nextSpy).calledWith(error)
+      })
+    })
+  })
 })
