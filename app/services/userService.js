@@ -59,17 +59,20 @@ async function ensureUser (idToken) {
 
 async function giveBaseScopes (userId) {
   const scopes = await scopeService.getBaseScopes()
+  let errors = ''
   for (const scope of scopes) {
     try {
-      const scopeResult = await UserScope.query().insert({
+      await UserScope.query().insert({
         id: uuid.v4(),
         user_id: userId,
         scope_id: scope.id
       })
-      console.log(scopeResult)
     } catch (err) {
-      console.log(err)
+      errors += `Error creating baseScope: ${scope.id} for user: ${userId}\n`
     }
+  }
+  if (errors) {
+    throw new Error(errors)
   }
 }
 
@@ -101,6 +104,7 @@ module.exports = {
   getUsers,
   getUserIdAndScopes,
   ensureUser,
+  giveBaseScopes,
   addScope,
   removeScope
 }
