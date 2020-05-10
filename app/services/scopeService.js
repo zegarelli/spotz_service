@@ -25,7 +25,9 @@ async function getById (id) {
 }
 
 async function getBaseScopes () {
-  const result = await Scope.query().select('id').whereIn('name', ['objects:edit', 'objects:create'])
+  const result = await Scope.query()
+    .select('id')
+    .whereIn('name', ['objects:edit', 'objects:create'])
   return result
 }
 
