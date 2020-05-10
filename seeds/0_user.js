@@ -21,7 +21,7 @@ exports.seed = async function (knex) {
       verified: true,
       extended_data: { profilePic: 'https://spotzstatic.s3.us-east-2.amazonaws.com/bitmoji.png' }
     },
-    { id: uuid.v4(), firstName: 'peter', lastName: 'dirks', email: 'pete@gmail.com' },
-    { id: uuid.v4(), firstName: 'jackson', lastName: 'braatz', email: 'jackson@gmail.com' }
+    { id: uuid.v4(), firstName: 'peter', lastName: 'dirks', username: 'peter', email: 'pete@gmail.com' },
+    { id: uuid.v4(), firstName: 'jackson', lastName: 'braatz', username: 'jackson', email: 'jackson@gmail.com' }
   ])
 }
