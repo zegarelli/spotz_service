@@ -26,6 +26,8 @@ async function getUserIdAndScopes (email) {
     .where({ email })
   if (users.length > 1) {
     throw new Error(`Multiple Users with the same email: ${email} found`)
+  } else if (users.length === 0) {
+    throw new Error(`No user with email: ${email} found`)
   }
   const scopes = users[0].scopes.map(scope => scope.name)
   return { id: users[0].id, scopes }
@@ -44,7 +46,7 @@ async function ensureUser (idToken) {
       const user = await createUser(email, username, verified)
 
       // I don't really see a reason to await this
-      giveBaseScopes(user.id)
+      await giveBaseScopes(user.id)
 
       return user
     } else {
@@ -58,11 +60,16 @@ async function ensureUser (idToken) {
 async function giveBaseScopes (userId) {
   const scopes = await scopeService.getBaseScopes()
   for (const scope of scopes) {
-    UserScope.query().insert({
-      id: uuid.v4(),
-      user_id: userId,
-      scope_id: scope.id
-    })
+    try {
+      const scopeResult = await UserScope.query().insert({
+        id: uuid.v4(),
+        user_id: userId,
+        scope_id: scope.id
+      })
+      console.log(scopeResult)
+    } catch (err) {
+      console.log(err)
+    }
   }
 }
 
